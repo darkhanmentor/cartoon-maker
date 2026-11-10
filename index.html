@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartoon Maker — Apni Cartoon Kahani Banayein</title>
+<meta name="description" content="Cartoon Maker — apni original cartoon kahani banayein: characters, scenes, Urdu voiceover aur video export. Mazahiya duo comedy, apne original characters ke saath.">
+<style>
+:root{
+  --navy:#0A1931; --amber:#FFC300; --pink:#FF6B9D; --green:#2ECC71; --blue:#3498DB;
+  --purple:#9B59B6; --orange:#FF8C42; --bg:#FFF9F0; --card:#ffffff; --ink:#1f2937; --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+header{background:linear-gradient(90deg,#ff5f6d,#ffc371,#2ecc71,#3498db,#9b59b6);color:#fff;padding:18px 14px 14px;text-align:center}
+header h1{margin:0;font-size:30px;line-height:1.2;text-shadow:0 2px 6px rgba(0,0,0,.25);font-family:"Comic Sans MS","Chalkboard SE","Segoe Print",cursive}
+header p{margin:6px 0 0;font-size:15px}
+.handbadge{display:inline-block;background:#fff;color:#0A1931;border-radius:999px;padding:2px 12px;font-size:13px;font-weight:700;margin-top:8px}
+.wrap{max-width:960px;margin:0 auto;padding:12px}
+.note{background:#fff7e0;border:2px solid var(--amber);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:14px}
+.note b{color:#7a5b00}
+section.card{background:var(--card);border:1px solid #eee;border-radius:14px;padding:14px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+h2{margin:0 0 8px;font-size:20px;color:var(--navy);border-bottom:3px solid var(--amber);display:inline-block;padding-bottom:2px;font-family:"Comic Sans MS","Chalkboard SE","Segoe Print",cursive}
+h3{margin:14px 0 6px;font-size:16px;color:var(--navy)}
+label{display:block;font-weight:700;margin:10px 0 4px;font-size:14px}
+input[type=text],textarea,select{width:100%;padding:10px;border:2px solid #d1d5db;border-radius:10px;font-size:16px;font-family:inherit}
+textarea{min-height:70px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue)}
+.btn{display:inline-block;border:none;border-radius:999px;padding:12px 20px;font-size:16px;font-weight:700;cursor:pointer;margin:6px 6px 6px 0;color:#fff;background:var(--blue)}
+.btn:hover{filter:brightness(1.08)}
+.btn.green{background:var(--green)} .btn.pink{background:var(--pink)} .btn.orange{background:var(--orange)}
+.btn.purple{background:var(--purple)} .btn.navy{background:var(--navy)} .btn.red{background:#e74c3c}
+.btn.small{padding:8px 14px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.row>*{flex:1 1 160px}
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+.char{border:2px solid #e5e7eb;border-radius:12px;padding:8px;text-align:center;cursor:pointer;background:#fff}
+.char.sel{border-color:var(--pink);background:#fff0f5;box-shadow:0 0 0 2px var(--pink)}
+.char canvas{width:100%;height:auto;border-radius:8px;background:#fffdf5}
+.char input{margin-top:6px;text-align:center;font-weight:700}
+.char .role{font-size:12px;color:var(--muted)}
+.voice-ctl{margin-top:8px;text-align:left;font-size:12px;background:#f8fafc;border-radius:8px;padding:6px}
+.voice-ctl label{margin:4px 0 0;font-size:12px}
+.voice-ctl input[type=range]{width:100%;padding:0}
+.voice-ctl .vname{color:var(--muted);font-size:11px;margin-top:2px}
+.scene{border:2px solid #e5e7eb;border-radius:12px;padding:10px;margin:10px 0;background:#fffdf7}
+.scene.active{border-color:var(--blue)}
+.scene .head{display:flex;justify-content:space-between;align-items:center}
+.scene .head b{font-size:16px}
+.slots{display:flex;gap:10px;flex-wrap:wrap}
+.slot{flex:1 1 200px;border:1px dashed #cbd5e1;border-radius:10px;padding:8px}
+.slot.empty{color:var(--muted);text-align:center;padding:18px 8px}
+#stage{width:100%;max-width:960px;border-radius:12px;border:3px solid var(--navy);background:#87CEEB;display:block}
+#subtitle{background:rgba(10,25,49,.92);color:#fff;border-radius:10px;padding:10px 14px;margin-top:8px;min-height:52px;font-size:18px;text-align:center}
+#subtitle .spk{color:var(--amber);font-weight:700}
+.status{font-size:14px;color:var(--muted);margin-top:6px}
+.status.ok{color:#15803d}.status.warn{color:#b45309}
+.pill{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;margin:2px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:18px 10px 28px}
+@media (max-width:600px){header h1{font-size:24px}.btn{width:100%;margin:6px 0}#subtitle{font-size:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎬 Cartoon Maker</h1>
+  <p>Apni cartoon kahani banayein — characters, scenes, Urdu voiceover aur video!</p>
+  <div><span class="handbadge">✏️ Haath se banaye hue cartoon — koi ready-made tasveer nahi</span></div>
+</header>
+<div class="wrap">
+
+<div class="note">
+  <b>Ye tool kya karta hai:</b> Aap ki kahani se <b>simple 2D cartoon video</b> banata hai — original characters, rang-birange scenes, Urdu bolna (voiceover) aur halki harkat. Bilkul <b>Chunnu Khargosh / Lily</b> wali videos jaisa.
+  <br><b>Imandari wali baat:</b> Ye TV studio jaisi full animation (daurna, ladna, munh hila kar bolna) NAHI banata — wo bade studio ka kaam hai. Ye simple, pyara cartoon banata hai jo bachon ko pasand aata hai.
+  <br><b>Original characters:</b> Motu Patlu ke naam, shakal ya kahani <b>copy nahi</b> karte — wo copyrighted hain. Hamare characters apne hain (Golu, Chintu aur dost), un jaisi comedy zaroor hai!
+  <br><b>Haath se banaya gaya:</b> Saare characters aur scenes haath se banaye hue (hand-drawn) hain — koi ready-made tasveer istemal nahi hoti. Har character ki <b>apni awaaz aur apni chaal</b> hai, jaise asli cartoon mein hota hai — Golu bhaari awaaz mein dheere bolta hai, Chintu tez aur unchi awaaz mein, aur bacha uchhal-uchhal kar chalta hai.
+  <br><b>Asal usool — ORIGINAL NATURAL:</b> Sab kuch original (characters, kahaniyan, art — kisi ki naqal nahi) aur sab kuch natural (haath se banaya hua, insaan jaisi awaaz aur chaal — machine jaisa nahi).
+</div>
+
+<section class="card">
+  <h2>✨ Prompt se Video — likhein, poora project khud ban jaye</h2>
+  <p>Apni kahani ka <b>prompt</b> yahan likhein (Urdu ya English) — masalan: <i>"Do dost gaon mein aam churate hain, phir maafi maangte hain."</i> Tool prompt ko parh kar <b>poora video project</b> bana dega: characters (apni awaaz + movement ke saath), scenes (har scene alag), dialogues, backgrounds, props, title, ending aur lambi kahani ho to movie ke parts bhi. <b>Ye koi AI nahi</b> — ek smart builder hai jo aap ke lafzon aur jumlon se project banata hai. Banne ke baad aap har cheez edit kar sakte hain.</p>
+  <textarea id="promptInput" rows="4" placeholder="Yahan apni kahani ka prompt likhein... masalan: Golu aur Chintu gaon mein aam churate hain. Lala Jee unhein pakar leta hai..."></textarea>
+  <div class="row" style="margin-top:10px">
+    <button id="btnPromptBuild" class="btn">🎬 Prompt se video project banayein</button>
+    <button id="btnPromptExample" class="btn ghost">💡 Misaal prompt</button>
+  </div>
+  <div id="promptStatus" class="status">Lambi kahani (8 ya zyada jumle) ho to Movie mode khud ban jayega — title card, 3 parts, climax aur ending ke saath.</div>
+</section>
+
+<section class="card" id="sec-story">
+  <h2>📖 1 — Kahani (Story)</h2>
+  <label for="storyTitle">Kahani ka naam / Title</label>
+  <input type="text" id="storyTitle" value="Golu aur Samosa" maxlength="80">
+  <div class="row">
+    <div>
+      <label for="storyCat">Kahani ki qism / Category</label>
+      <select id="storyCat">
+        <option value="comedy">😂 Comedy (mazahiya)</option>
+        <option value="islamic">🌙 Islamic / Akhlaqi (moral story)</option>
+      </select>
+    </div>
+    <div>
+      <label for="modeSelect">Video ki qism / Type</label>
+      <select id="modeSelect">
+        <option value="short">🎬 Short video (chhoti kahani)</option>
+        <option value="movie">🎥 Movie / Film (lambi kahani — 20+ minute bhi)</option>
+      </select>
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <button class="btn pink" id="btnSampleComedy">😂 Sample: Comedy kahani</button>
+      <button class="btn green" id="btnSampleIslamic">🌙 Sample: Islamic kahani</button>
+      <button class="btn purple" id="btnSampleMovie">🎥 Sample: Movie (adventure)</button>
+      <button class="btn navy" id="btnNewStory">➕ Nayi kahani</button>
+    </div>
+  </div>
+  <p class="status" id="durationInfo">⏱ Kul andaza duration: —</p>
+  <p class="status">Sample dabayein to tayyar kahani load ho jayegi — phir neeche scenes mein tabdeeli kar sakte hain. <b>Scenes ki koi limit nahi</b> — 1 minute ki video ho ya 20 minute ki film, jitne scenes chahiye add karein.</p>
+  <div id="moviePanel" style="display:none">
+    <h3>🎥 Movie Structure (Film ki banawat)</h3>
+    <p class="status">Movie mein title card (shuru mein), acts (hissay), climax aur end credits (aakhir mein) khud lag jate hain. Har scene ko neeche us ke act mein daalein.</p>
+    <div id="actList"></div>
+    <button class="btn small navy" id="btnAddAct">➕ Act add karein</button>
+  </div>
+</section>
+
+<section class="card" id="sec-chars">
+  <h2>🧑‍🤝‍🧑 2 — Characters (Kirdar)</h2>
+  <p style="margin:4px 0">Kisi character par tap karein to wo scene mein add hoga. Naam badalna ho to neeche likh dein — naam har jagah update ho jayega. <b>Har character ki apni awaaz aur apni chaal hai</b> — pitch aur speed ke slider se awaaz badlein, aur 🔊 dabakar sunain.</p>
+  <div class="chars" id="charGrid"></div>
+</section>
+
+<section class="card" id="sec-scenes">
+  <h2>🎭 3 — Scenes (Manzar)</h2>
+  <p style="margin:4px 0">Har scene mein: background chunein, 1–2 characters lagayein, un ka expression chunein, aur dialogue likhein.</p>
+  <div id="sceneList"></div>
+  <button class="btn green" id="btnAddScene">➕ Scene add karein</button>
+</section>
+
+<section class="card" id="sec-preview">
+  <h2>▶️ 4 — Preview aur Video</h2>
+  <canvas id="stage" width="960" height="540"></canvas>
+  <div id="subtitle"><span class="spk">—</span><br>Preview chalane ke liye neeche Play dabayein.</div>
+  <div class="row" style="margin-top:10px">
+    <div><label><input type="checkbox" id="subToggle" checked style="width:auto"> Subtitles dikhayein (default ON)</label></div>
+    <div><label>Subtitle size</label><select id="subSize">
+      <option value="small">Chhota</option>
+      <option value="medium" selected>Medium</option>
+      <option value="large">Bara</option>
+    </select></div>
+    <div><label>Subtitle position</label><select id="subPos">
+      <option value="bottom" selected>Neeche (bottom)</option>
+      <option value="top">Upar (top)</option>
+    </select></div>
+    <div><label>&nbsp;</label><button class="btn small navy" id="btnSrtOnly">⬇️ Sirf subtitles (.srt)</button></div>
+  </div>
+  <p class="status">Subtitles har dialogue ki line ke saath <b>khud</b> lag jate hain — awaaz ke saath sync mein, Urdu mein. Video export karte waqt <b>.srt file bhi</b> ban jati hai (YouTube par video ke saath alag se upload kar sakte hain).</p>
+  <div style="margin-top:10px">
+    <button class="btn pink" id="btnPlay">▶️ Play (awaaz ke saath)</button>
+    <button class="btn red" id="btnStop">⏹ Stop</button>
+    <button class="btn purple" id="btnExport">🎥 Video banayein (WebM download)</button>
+  </div>
+  <p class="status" id="voiceStatus">Awaaz (voiceover) check ho rahi hai…</p>
+  <p class="status" id="exportStatus"></p>
+  <p class="status"><b>Export ke baare mein sach:</b> Download hone wali video mein <b>awaaz (audio) nahi hogi</b> — sirf tasveer + likha hua dialogue hoga. Browser ki awaaz ko video mein record karna mumkin nahi. Awaaz ke liye Preview mein sunain, ya apni recording alag se video par lagayein.</p>
+  <p class="status"><b>Lambi video / movie ke baare mein sach:</b> Export ke waqt ye tab khula rakhna zaroori hai — band kar diya to video adhoori reh jayegi. Lambi film mein phone ki memory zyada istemal hoti hai (lagbhag 350 MB har 10 minute ke liye). Agar phone par mushkil ho to movie ko <b>act-wise export</b> karein — har act ki alag video ban jayegi, phir unhein jod lein.</p>
+  <div id="downloadArea"></div>
+</section>
+
+<section class="card" id="sec-save">
+  <h2>💾 5 — Save / Load</h2>
+  <button class="btn navy" id="btnSave">💾 Is browser mein save karein</button>
+  <button class="btn orange" id="btnExportStory">⬇️ Kahani file download karein (JSON)</button>
+  <label for="importFile">📂 Kahani file se load karein</label>
+  <input type="file" id="importFile" accept=".json,application/json">
+  <p class="status" id="saveStatus"></p>
+</section>
+
+<section class="card" id="sec-islamic">
+  <h2>🌙 Islamic Kahaniyan — Ahem Baat</h2>
+  <p>Islamic / akhlaqi kahaniyon mein hum sirf <b>original characters</b> (bachay, ustaad, ammi, dost) dikhate hain. <b>Ambiya (Prophets) aur Sahaba ki tasveer bilkul nahi banate</b> — ye hamari izzat aur ehtiram ka tareeqa hai. Kahaniyan sach, imaandari, mehnat, walidain ki izzat aur achay akhlaaq par honi chahiye.</p>
+  <p><span class="pill">Sach</span><span class="pill">Imaandari</span><span class="pill">Mehnat</span><span class="pill">Walidain ki izzat</span><span class="pill">Doston se mohabbat</span></p>
+</section>
+
+</div>
+<footer>
+  Cartoon Maker v1 — Darkhan Mentor ke liye banaya gaya • Free, no server, sab kuch aap ke browser mein chalta hai • Original Natural: sab kuch original, sab kuch haath se banaya hua
+</footer>
+
+<script>
+"use strict";
+/* ================= DATA ================= */
+const BACKGROUNDS = [
+  {id:"village", name:"Gaon (Village)"},
+  {id:"school",  name:"School"},
+  {id:"home",    name:"Ghar (Home)"},
+  {id:"jungle",  name:"Jungle"},
+  {id:"park",    name:"Park"},
+  {id:"mosque",  name:"Masjid / Madrasa (bahar)"}
+];
+const EXPRESSIONS = [
+  {id:"happy", name:"😊 Khush"},
+  {id:"sad", name:"😢 Udaas"},
+  {id:"surprised", name:"😲 Hairan"},
+  {id:"thinking", name:"🤔 Soch mein"},
+  {id:"angry", name:"😠 Ghussa"}
+];
+const POSES = [
+  {id:"stand", name:"Khara"},
+  {id:"wave", name:"Haath hila raha"},
+  {id:"point", name:"Ishaara kar raha"}
+];
+/* Original characters — NOT Motu/Patlu. Golu = food-loving strong simpleton, Chintu = clever thin friend.
+   voice: per-character pitch (0.5 low … 2 high) + rate (0.5 slow … 1.5 fast) — each character sounds like a different person.
+   move: per-character movement style — waddle (heavy), springy (quick), slow, gentle, sturdy, hop. */
+const CHARACTERS = [
+  {id:"golu",  defName:"Golu",    role:"Taakatwar, khane ka shaukeen, seedha-saadha dost", shirt:"#ff8c42", skin:"#f2c29b", build:"round", move:"waddle", voice:{pitch:0.6, rate:0.85}, sample:"Chintu! Mujhe samosa chahiye, abhi!"},
+  {id:"chintu",defName:"Chintu",  role:"Patla, hoshiyar, chalak dost", shirt:"#2ecc71", skin:"#e8b98a", build:"thin", move:"springy", voice:{pitch:1.4, rate:1.15}, sample:"Golu, pehle socho, phir karo!"},
+  {id:"teacher",defName:"Ustaad Rahim", role:"School teacher", shirt:"#7d5ba6", skin:"#e8b98a", build:"normal", move:"slow", voice:{pitch:0.9, rate:0.9}, sample:"Bachon, aaj hum sach ke baare mein seekhenge."},
+  {id:"mother", defName:"Ammi",   role:"Maa", shirt:"#ff6b9d", skin:"#f2c29b", build:"normal", move:"gentle", voice:{pitch:1.2, rate:0.95}, sample:"Beta, khana tayyar hai, aa jao."},
+  {id:"shopkeeper",defName:"Lala Jee", role:"Dukaan-daar", shirt:"#3498db", skin:"#d9a066", build:"round", move:"sturdy", voice:{pitch:0.7, rate:1.0}, sample:"Aao bhai, taaza samose le lo!"},
+  {id:"child",  defName:"Bilal",  role:"Bacha", shirt:"#f1c40f", skin:"#f2c29b", build:"small", move:"hop", voice:{pitch:1.6, rate:1.1}, sample:"Ammi! Dekho, main ne kya banaya!"}
+];
+function defaultVoiceSettings(){
+  const o = {};
+  CHARACTERS.forEach(c=>{ o[c.id] = {pitch:c.voice.pitch, rate:c.voice.rate, voiceURI:null}; });
+  return o;
+}
+function voiceOf(id){
+  const d = charDef(id) || CHARACTERS[0];
+  const s = (state.voiceSettings && state.voiceSettings[id]) || {};
+  return { pitch: (s.pitch != null ? s.pitch : d.voice.pitch),
+           rate: (s.rate != null ? s.rate : d.voice.rate),
+           voiceURI: s.voiceURI || null };
+}
+let state = {
+  title:"Golu aur Samosa",
+  category:"comedy",
+  mode:"short",
+  actTitles:["Act 1 — Shuruaat","Act 2 — Safar","Act 3 — Ending"],
+  subtitles:{on:true, size:"medium", pos:"bottom"}, /* auto-subtitles: default ON */
+  charNames:{golu:"Golu",chintu:"Chintu",teacher:"Ustaad Rahim",mother:"Ammi",shopkeeper:"Lala Jee",child:"Bilal"},
+  voiceSettings:defaultVoiceSettings(),
+  scenes:[]
+};
+let activeScene = 0;
+let playing = false, playTimer = null, exporting = false;
+
+/* Sample stories — har scene mukhtalif hai (background, time, angle, position, prop) — koi repeat nahi. */
+const SAMPLE_COMEDY = {
+  title:"Golu aur Samosa", category:"comedy", mode:"short",
+  scenes:[
+    {bg:"village", time:"day", angle:"wide", prop:"tree", act:0, climax:false, chars:[{id:"golu",expr:"happy",pose:"stand",pos:"left"},{id:"chintu",expr:"happy",pose:"wave",pos:"right"}], speaker:"golu", dialogue:"Chintu! Aaj samosa khane ka bohat mood hai!"},
+    {bg:"village", time:"day", angle:"close", prop:"cart", act:0, climax:false, chars:[{id:"golu",expr:"happy",pose:"point",pos:"center"},{id:"shopkeeper",expr:"happy",pose:"stand",pos:"right"}], speaker:"golu", dialogue:"Lala Jee, ek samosa de do... nahi, DAS samose de do!"},
+    {bg:"home", time:"sunset", angle:"medium", prop:"books", act:0, climax:false, chars:[{id:"chintu",expr:"thinking",pose:"stand",pos:"left"},{id:"golu",expr:"surprised",pose:"stand",pos:"right"}], speaker:"chintu", dialogue:"Golu, pehle jeb mein paise to gin lo!"},
+    {bg:"park", time:"day", angle:"wide", prop:"bench", act:0, climax:false, chars:[{id:"golu",expr:"happy",pose:"wave",pos:"right"},{id:"chintu",expr:"happy",pose:"stand",pos:"left"}], speaker:"golu", dialogue:"Chintu, tum mere sab se ache dost ho — aadha samosa tumhara!"}
+  ]
+};
+const SAMPLE_ISLAMIC = {
+  title:"Sach Bolne Wala Bacha", category:"islamic", mode:"short",
+  scenes:[
+    {bg:"home", time:"day", angle:"medium", prop:"books", act:0, climax:false, chars:[{id:"mother",expr:"happy",pose:"stand",pos:"left"},{id:"child",expr:"happy",pose:"stand",pos:"right"}], speaker:"mother", dialogue:"Beta, hamesha sach bolna — Allah sach bolne walon ko pasand karta hai."},
+    {bg:"school", time:"day", angle:"close", prop:"none", act:0, climax:false, chars:[{id:"child",expr:"sad",pose:"stand",pos:"center"},{id:"teacher",expr:"thinking",pose:"stand",pos:"right"}], speaker:"child", dialogue:"Ustaad Jee, ye ghalti mujh se hui thi. Main sach bolta hoon."},
+    {bg:"school", time:"sunset", angle:"wide", prop:"tree", act:0, climax:false, chars:[{id:"teacher",expr:"happy",pose:"wave",pos:"left"},{id:"child",expr:"happy",pose:"stand",pos:"right"}], speaker:"teacher", dialogue:"Shabash Bilal! Sach bolne wala bacha sab se acha hota hai."},
+    {bg:"park", time:"sunset", angle:"medium", prop:"ball", act:0, climax:false, chars:[{id:"child",expr:"happy",pose:"wave",pos:"center"}], speaker:"child", dialogue:"Sach bolna hi sab se achi aadat hai!"}
+  ]
+};
+/* Sample MOVIE — Golu aur Chintu ki Jungle Adventure (3 acts, 12 scenes, har scene mukhtalif) */
+const SAMPLE_MOVIE = {
+  title:"Golu aur Chintu ki Jungle Adventure", category:"comedy", mode:"movie",
+  actTitles:["Act 1 — Gaon mein subah","Act 2 — Jungle ka safar","Act 3 — Wapsi aur sabak"],
+  scenes:[
+    {bg:"village", time:"day", angle:"wide", prop:"tree", act:0, climax:false, chars:[{id:"golu",expr:"happy",pose:"wave",pos:"left"},{id:"chintu",expr:"happy",pose:"stand",pos:"right"}], speaker:"chintu", dialogue:"Golu, aaj hum jungle ja kar aam todein ge!"},
+    {bg:"home", time:"day", angle:"close", prop:"books", act:0, climax:false, chars:[{id:"mother",expr:"happy",pose:"stand",pos:"center"},{id:"golu",expr:"happy",pose:"stand",pos:"right"}], speaker:"mother", dialogue:"Beta, raaste mein ehtiyat se jana, aur waqt par wapas aana."},
+    {bg:"park", time:"day", angle:"medium", prop:"bench", act:0, climax:false, chars:[{id:"golu",expr:"thinking",pose:"stand",pos:"left"},{id:"chintu",expr:"happy",pose:"point",pos:"right"}], speaker:"golu", dialogue:"Chintu, raasta bhool gaye to? Tumhe to sab pata hota hai!"},
+    {bg:"jungle", time:"day", angle:"wide", prop:"tree", act:1, climax:false, chars:[{id:"chintu",expr:"happy",pose:"wave",pos:"left"},{id:"golu",expr:"surprised",pose:"stand",pos:"right"}], speaker:"chintu", dialogue:"Dekho Golu! Kitne bare aam ke ped hain!"},
+    {bg:"jungle", time:"sunset", angle:"close", prop:"none", act:1, climax:false, chars:[{id:"golu",expr:"surprised",pose:"point",pos:"center"}], speaker:"golu", dialogue:"Chintu! Wo kya tha? Koi awaaz aayi!"},
+    {bg:"jungle", time:"sunset", angle:"medium", prop:"lantern", act:1, climax:false, chars:[{id:"chintu",expr:"thinking",pose:"stand",pos:"left"},{id:"golu",expr:"sad",pose:"stand",pos:"right"}], speaker:"chintu", dialogue:"Daro mat, ye sirf bandar hai. Chalo, ped ke neeche chalte hain."},
+    {bg:"jungle", time:"night", angle:"wide", prop:"lantern", act:1, climax:true, chars:[{id:"golu",expr:"surprised",pose:"stand",pos:"left"},{id:"chintu",expr:"surprised",pose:"stand",pos:"right"}], speaker:"golu", dialogue:"Aandhi aa gayi! Ped girne wala hai — bhaago!"},
+    {bg:"jungle", time:"night", angle:"close", prop:"tree", act:1, climax:false, chars:[{id:"chintu",expr:"happy",pose:"wave",pos:"center"}], speaker:"chintu", dialogue:"Hum bach gaye! Dekho, aam bhi mil gaye!"},
+    {bg:"village", time:"sunset", angle:"medium", prop:"cart", act:2, climax:false, chars:[{id:"golu",expr:"happy",pose:"wave",pos:"left"},{id:"chintu",expr:"happy",pose:"stand",pos:"right"}], speaker:"golu", dialogue:"Gaon wapas aa gaye! Sab ko aam khilayenge!"},
+    {bg:"home", time:"night", angle:"medium", prop:"lantern", act:2, climax:false, chars:[{id:"mother",expr:"happy",pose:"stand",pos:"left"},{id:"child",expr:"happy",pose:"stand",pos:"right"}], speaker:"mother", dialogue:"Mere bachon, tum dono ne himmat dikhayi. Mujhe tum par fakhar hai."},
+    {bg:"park", time:"day", angle:"wide", prop:"ball", act:2, climax:false, chars:[{id:"teacher",expr:"happy",pose:"wave",pos:"left"},{id:"golu",expr:"happy",pose:"stand",pos:"right"}], speaker:"teacher", dialogue:"Golu aur Chintu ne dikhaya — dosti aur himmat se har mushkil aasan ho jati hai."},
+    {bg:"park", time:"sunset", angle:"close", prop:"bench", act:2, climax:false, chars:[{id:"golu",expr:"happy",pose:"wave",pos:"center"},{id:"chintu",expr:"happy",pose:"wave",pos:"right"}], speaker:"chintu", dialogue:"Aur aam? Wo to sab se meetha inaam tha!"}
+  ]
+};
+
+/* ================= HELPERS ================= */
+const $ = id => document.getElementById(id);
+const charName = id => state.charNames[id] || (CHARACTERS.find(c=>c.id===id)||{}).defName || id;
+const charDef = id => CHARACTERS.find(c=>c.id===id);
+const ANGLES = [
+  {id:"wide", name:"Wide (door se — poora manzar)", scale:1.2},
+  {id:"medium", name:"Medium (normal)", scale:1.5},
+  {id:"close", name:"Close-up (paas se — bada chehra)", scale:1.9}
+];
+const TIMES = [
+  {id:"day", name:"☀️ Din"},
+  {id:"sunset", name:"🌇 Shaam (sunset)"},
+  {id:"night", name:"🌙 Raat"}
+];
+const PROPS = [
+  {id:"none", name:"Koi nahi"},
+  {id:"tree", name:"🌳 Ped"},
+  {id:"bench", name:"🪑 Bench"},
+  {id:"cart", name:"🛒 Thela (cart)"},
+  {id:"books", name:"📚 Kitabein"},
+  {id:"lantern", name:"🏮 Lalteen"},
+  {id:"ball", name:"⚽ Gend"}
+];
+const POSITIONS = [
+  {id:"left", name:"Baayein (left)", x:300},
+  {id:"center", name:"Beech mein (center)", x:480},
+  {id:"right", name:"Daayein (right)", x:660}
+];
+function blankScene(){
+  return {bg:"village", time:"day", angle:"medium", prop:"none", act:0, climax:false,
+          chars:[{id:"golu",expr:"happy",pose:"stand",pos:"left"}], speaker:"golu", dialogue:""};
+}
+function normalizeScene(s){
+  const d = blankScene();
+  const o = Object.assign({}, d, s||{});
+  o.chars = (o.chars||[]).slice(0,2).map((c,i)=>Object.assign({id:"golu",expr:"happy",pose:"stand",pos: i===0?"left":"right"}, c));
+  return o;
+}
+/* Variety: har scene ki pehchan — background + time + angle + characters + positions + prop */
+function sceneSignature(sc){
+  return [sc.bg, sc.time, sc.angle, sc.prop, sc.chars.map(c=>c.id+"@"+(c.pos||"left")).join("+")].join("|");
+}
+function varyScene(sc, prev){
+  const pick = (arr, cur)=>{ const others = arr.filter(x=>x!==cur); return others[Math.floor(Math.random()*others.length)]; };
+  sc.bg = pick(BACKGROUNDS.map(b=>b.id), sc.bg);
+  sc.time = pick(TIMES.map(t=>t.id), sc.time);
+  sc.angle = pick(ANGLES.map(a=>a.id), sc.angle);
+  sc.prop = pick(PROPS.map(p=>p.id), sc.prop);
+  sc.chars.forEach((c,i)=>{ c.pos = pick(POSITIONS.map(p=>p.id), c.pos); });
+  if(prev && sceneSignature(sc) === sceneSignature(prev)) sc.bg = pick(BACKGROUNDS.map(b=>b.id), sc.bg);
+}
+function fmtDuration(ms){
+  const s = Math.round(ms/1000), m = Math.floor(s/60), r = s%60;
+  return m > 0 ? (m + " min " + r + " sec") : (r + " sec");
+}
+function estimateTotalMs(){
+  let ms = state.scenes.reduce((a,sc)=>a + sceneDuration(sc), 0);
+  if(state.mode === "movie") ms += 3500 + 5000; /* title card + credits */
+  return ms;
+}
+function updateDuration(){
+  const el = $("durationInfo"); if(!el) return;
+  const n = state.scenes.length;
+  if(n === 0){ el.textContent = "⏱ Kul andaza duration: abhi koi scene nahi hai."; return; }
+  if(state.mode === "movie"){
+    const acts = new Set(state.scenes.map(s=>s.act||0)).size;
+    el.textContent = "🎬 Movie: " + acts + " acts • " + n + " scenes • kul andaza duration ~" + fmtDuration(estimateTotalMs()) + " (title card + credits shamil). Scenes ki koi limit nahi — aur add karte jayein, duration barhti jayegi.";
+  } else {
+    el.textContent = "⏱ Kul andaza duration: " + n + " scenes • ~" + fmtDuration(estimateTotalMs()) + ". Scenes ki koi limit nahi — 1 minute ho ya 20 minute, jitne chahiye add karein.";
+  }
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* ================= CHARACTER GRID ================= */
+function renderCharGrid(){
+  const grid = $("charGrid"); grid.innerHTML = "";
+  CHARACTERS.forEach(c=>{
+    const div = document.createElement("div");
+    div.className = "char"; div.dataset.id = c.id;
+    const cv = document.createElement("canvas");
+    cv.width = 200; cv.height = 200;
+    const inp = document.createElement("input");
+    inp.type = "text"; inp.value = charName(c.id); inp.maxLength = 20;
+    inp.setAttribute("aria-label","Character name "+c.defName);
+    inp.addEventListener("input", ()=>{ state.charNames[c.id] = inp.value.trim() || c.defName; renderScenes(); drawCurrent(); });
+    const role = document.createElement("div");
+    role.className = "role"; role.textContent = c.role;
+    div.appendChild(cv); div.appendChild(inp); div.appendChild(role);
+    /* Per-character voice controls: pitch + speed sliders, test button, assigned system voice */
+    const v = voiceOf(c.id);
+    const vc = document.createElement("div");
+    vc.className = "voice-ctl";
+    vc.innerHTML =
+      '<label>🔊 Awaaz — sur (pitch): <span data-pv>'+v.pitch.toFixed(2)+'</span></label>'+
+      '<input type="range" min="0.5" max="2" step="0.05" value="'+v.pitch+'" data-k="pitch" aria-label="Pitch '+c.defName+'">'+
+      '<label>⏩ Bolne ki raftaar (speed): <span data-rv>'+v.rate.toFixed(2)+'</span></label>'+
+      '<input type="range" min="0.5" max="1.5" step="0.05" value="'+v.rate+'" data-k="rate" aria-label="Speed '+c.defName+'">'+
+      '<div class="vname" data-vname></div>'+
+      '<button class="btn small purple" data-test style="width:100%;margin-top:6px">🔊 Awaaz sunain</button>';
+    vc.querySelectorAll("input[type=range]").forEach(r=>{
+      r.addEventListener("input", ()=>{
+        if(!state.voiceSettings[c.id]) state.voiceSettings[c.id] = {pitch:c.voice.pitch, rate:c.voice.rate, voiceURI:null};
+        state.voiceSettings[c.id][r.dataset.k] = parseFloat(r.value);
+        vc.querySelector(r.dataset.k === "pitch" ? "[data-pv]" : "[data-rv]").textContent = parseFloat(r.value).toFixed(2);
+      });
+    });
+    vc.querySelector("[data-test]").addEventListener("click", ev=>{
+      ev.stopPropagation();
+      speak(c.sample, c.id);
+    });
+    div.appendChild(vc);
+    div.addEventListener("click", e=>{
+      if(e.target.closest("input,select,button,textarea")) return;
+      addCharToScene(c.id);
+    });
+    grid.appendChild(div);
+    drawCharacter(cv.getContext("2d"), c.id, 100, 185, 1.0, "happy", "wave");
+    updateVoiceName(c.id);
+  });
+}
+function updateVoiceName(id){
+  const el = document.querySelector('.char[data-id="'+id+'"] [data-vname]');
+  if(!el) return;
+  const av = assignedVoice[id];
+  el.textContent = av ? ("System awaaz: " + av.name) : "System awaaz: default";
+}
+function addCharToScene(id){
+  const sc = state.scenes[activeScene]; if(!sc) return;
+  if(sc.chars.length >= 2){ alert("Ek scene mein zyada se zyada 2 characters hote hain."); return; }
+  sc.chars.push({id:id, expr:"happy", pose:"stand"});
+  renderScenes(); drawCurrent();
+}
+
+/* ================= SCENE EDITOR ================= */
+function actOptions(selected){
+  return (state.actTitles||[]).map((t,ai)=>'<option value="'+ai+'"'+(selected===ai?" selected":"")+'>'+t.replace(/</g,"&lt;")+'</option>').join("");
+}
+function renderScenes(){
+  const list = $("sceneList"); list.innerHTML = "";
+  if(state.scenes.length === 0){ list.innerHTML = "<p class='status'>Abhi koi scene nahi hai — 'Scene add karein' dabayein.</p>"; updateDuration(); return; }
+  let lastAct = -1;
+  state.scenes.forEach((sc, i)=>{
+    /* Movie mode: act header jab act badle */
+    if(state.mode === "movie" && (sc.act||0) !== lastAct){
+      lastAct = sc.act||0;
+      const h = document.createElement("h3");
+      h.textContent = "🎬 " + (state.actTitles[lastAct] || ("Act " + (lastAct+1)));
+      h.style.cssText = "background:#0A1931;color:#FFC300;border-radius:8px;padding:6px 10px;margin:14px 0 4px";
+      list.appendChild(h);
+    }
+    const box = document.createElement("div");
+    box.className = "scene" + (i===activeScene ? " active" : "");
+    const movieBits = state.mode === "movie"
+      ? '<div><label>Act</label><select data-f="act">'+actOptions(sc.act||0)+'</select></div>'+
+        '<div><label><input type="checkbox" data-f="climax" '+(sc.climax?"checked":"")+' style="width:auto"> 🔥 Climax scene</label></div>'
+      : '';
+    box.innerHTML =
+      '<div class="head"><b>Scene '+(i+1)+(sc.climax ? ' 🔥 Climax' : '')+'</b>'+
+      '<span><button class="btn small orange" data-act="vary" title="Scene ki setting badlein">🎲 Vary</button>'+
+      '<button class="btn small navy" data-act="up">↑</button>'+
+      '<button class="btn small navy" data-act="down">↓</button>'+
+      '<button class="btn small red" data-act="del">✕ Delete</button></span></div>'+
+      '<div class="row"><div><label>Background</label><select data-f="bg">'+
+        BACKGROUNDS.map(b=>'<option value="'+b.id+'"'+(sc.bg===b.id?" selected":"")+'>'+b.name+'</option>').join("")+
+      '</select></div>'+
+      '<div><label>Waqt (Time of day)</label><select data-f="time">'+
+        TIMES.map(b=>'<option value="'+b.id+'"'+(sc.time===b.id?" selected":"")+'>'+b.name+'</option>').join("")+
+      '</select></div>'+
+      '<div><label>Camera Angle</label><select data-f="angle">'+
+        ANGLES.map(b=>'<option value="'+b.id+'"'+(sc.angle===b.id?" selected":"")+'>'+b.name+'</option>').join("")+
+      '</select></div>'+
+      '<div><label>Prop (samaan)</label><select data-f="prop">'+
+        PROPS.map(b=>'<option value="'+b.id+'"'+(sc.prop===b.id?" selected":"")+'>'+b.name+'</option>').join("")+
+      '</select></div></div>'+
+      '<div class="row">'+movieBits+
+      '<div><label>Bolne wala (Speaker)</label><select data-f="speaker">'+
+        CHARACTERS.map(c=>'<option value="'+c.id+'"'+(sc.speaker===c.id?" selected":"")+'>'+charName(c.id)+'</option>').join("")+
+      '</select></div></div>'+
+      '<label>Dialogue (jo character bolega)</label>'+
+      '<textarea data-f="dialogue" placeholder="Yahan dialogue likhein...">'+sc.dialogue.replace(/</g,"&lt;")+'</textarea>'+
+      '<label>Characters is scene mein</label><div class="slots" data-slots></div>';
+    /* Variety warning: ye scene pehle wale jaisa to nahi? */
+    if(i > 0 && sceneSignature(sc) === sceneSignature(state.scenes[i-1])){
+      const warn = document.createElement("p");
+      warn.className = "status warn";
+      warn.innerHTML = "⚠️ Ye scene pehle wale jaisa lag raha hai — background, waqt, angle ya position badal lein. ";
+      const vb = document.createElement("button");
+      vb.className = "btn small orange"; vb.textContent = "🎲 Scene badlein (vary)";
+      vb.addEventListener("click", ()=>{ varyScene(sc, state.scenes[i-1]); renderScenes(); drawCurrent(); });
+      warn.appendChild(vb);
+      box.appendChild(warn);
+    }
+    box.addEventListener("click", e=>{
+      const act = e.target.dataset && e.target.dataset.act;
+      if(act === "del"){ state.scenes.splice(i,1); if(activeScene >= state.scenes.length) activeScene = Math.max(0, state.scenes.length-1); renderScenes(); drawCurrent(); }
+      if(act === "up" && i>0){ const t=state.scenes[i-1]; state.scenes[i-1]=sc; state.scenes[i]=t; activeScene=i-1; renderScenes(); drawCurrent(); }
+      if(act === "down" && i<state.scenes.length-1){ const t=state.scenes[i+1]; state.scenes[i+1]=sc; state.scenes[i]=t; activeScene=i+1; renderScenes(); drawCurrent(); }
+      if(act === "vary"){ varyScene(sc, i>0 ? state.scenes[i-1] : null); renderScenes(); drawCurrent(); }
+      if(e.target.closest(".scene")) activeScene = i;
+    });
+    box.querySelectorAll("[data-f]").forEach(el=>{
+      if(el.type === "checkbox"){
+        el.addEventListener("change", ()=>{ activeScene=i; sc[el.dataset.f]=el.checked; renderScenes(); drawCurrent(); });
+      } else {
+        el.addEventListener("change", ()=>{ activeScene=i; sc[el.dataset.f]= el.dataset.f==="act" ? parseInt(el.value,10) : el.value; renderScenes(); drawCurrent(); });
+        el.addEventListener("input", ()=>{ activeScene=i; sc[el.dataset.f]=el.value; drawCurrent(); updateDuration(); });
+      }
+    });
+    const slots = box.querySelector("[data-slots]");
+    sc.chars.forEach((ch, ci)=>{
+      const slot = document.createElement("div"); slot.className = "slot";
+      slot.innerHTML = '<b>'+charName(ch.id)+'</b><br>'+
+        '<label>Expression</label><select data-k="expr">'+EXPRESSIONS.map(x=>'<option value="'+x.id+'"'+(ch.expr===x.id?" selected":"")+'>'+x.name+'</option>').join("")+'</select>'+
+        '<label>Pose</label><select data-k="pose">'+POSES.map(x=>'<option value="'+x.id+'"'+(ch.pose===x.id?" selected":"")+'>'+x.name+'</option>').join("")+'</select>'+
+        '<label>Position</label><select data-k="pos">'+POSITIONS.map(x=>'<option value="'+x.id+'"'+((ch.pos||"left")===x.id?" selected":"")+'>'+x.name+'</option>').join("")+'</select>'+
+        '<br><button class="btn small red" data-rm>Remove</button>';
+      slot.querySelectorAll("select").forEach(sel=>{
+        sel.addEventListener("change", ()=>{ activeScene=i; ch[sel.dataset.k]=sel.value; renderScenes(); drawCurrent(); });
+      });
+      slot.querySelector("[data-rm]").addEventListener("click", ()=>{ activeScene=i; sc.chars.splice(ci,1); renderScenes(); drawCurrent(); });
+      slots.appendChild(slot);
+    });
+    if(sc.chars.length < 2){
+      const empty = document.createElement("div");
+      empty.className = "slot empty";
+      empty.textContent = "Upar se character chunein (tap karein) — yahan add hoga.";
+      slots.appendChild(empty);
+    }
+    list.appendChild(box);
+  });
+  renderMoviePanel();
+  updateDuration();
+}
+function renderMoviePanel(){
+  const panel = $("moviePanel");
+  if(!panel) return;
+  panel.style.display = state.mode === "movie" ? "block" : "none";
+  if(state.mode !== "movie") return;
+  const al = $("actList"); al.innerHTML = "";
+  (state.actTitles||[]).forEach((t, ai)=>{
+    const count = state.scenes.filter(s=>(s.act||0)===ai).length;
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap";
+    const inp = document.createElement("input");
+    inp.type = "text"; inp.value = t; inp.style.maxWidth = "260px";
+    inp.addEventListener("input", ()=>{ state.actTitles[ai] = inp.value; renderScenes(); });
+    const info = document.createElement("span");
+    info.className = "status"; info.textContent = count + " scenes • ~" + fmtDuration(state.scenes.filter(s=>(s.act||0)===ai).reduce((a,sc)=>a+sceneDuration(sc),0));
+    const eb = document.createElement("button");
+    eb.className = "btn small purple"; eb.textContent = "🎥 Is act ki video";
+    eb.addEventListener("click", ()=>exportAct(ai));
+    row.appendChild(inp); row.appendChild(info); row.appendChild(eb);
+    al.appendChild(row);
+  });
+}
+
+/* ================= DRAWING: BACKGROUNDS ================= */
+function sky(ctx, w, h, top, bottom){
+  const g = ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0, top); g.addColorStop(1, bottom);
+  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+}
+function sun(ctx, x, y, r){
+  ctx.fillStyle = "#FFD93D"; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+  ctx.strokeStyle = "#FFD93D"; ctx.lineWidth = 5;
+  for(let a=0;a<8;a++){ const t=a*Math.PI/4;
+    ctx.beginPath(); ctx.moveTo(x+Math.cos(t)*(r+6), y+Math.sin(t)*(r+6));
+    ctx.lineTo(x+Math.cos(t)*(r+18), y+Math.sin(t)*(r+18)); ctx.stroke(); }
+}
+function cloud(ctx, x, y, s){
+  ctx.fillStyle = "rgba(255,255,255,.9)";
+  [[0,0,34],[30,-10,40],[62,0,32]].forEach(p=>{
+    ctx.beginPath(); ctx.arc(x+p[0]*s, y+p[1]*s, p[2]*s, 0, 7); ctx.fill();
+  });
+}
+function ground(ctx, w, h, color){ ctx.fillStyle = color; ctx.fillRect(0, h*0.78, w, h*0.22); }
+function tree(ctx, x, y, s){
+  ctx.fillStyle = "#8B5A2B"; ctx.fillRect(x-8*s, y-70*s, 16*s, 70*s);
+  ctx.fillStyle = "#27ae60";
+  [[0,-95,42],[ -30,-70,30],[30,-70,30]].forEach(p=>{
+    ctx.beginPath(); ctx.arc(x+p[0]*s, y+p[1]*s, p[2]*s, 0, 7); ctx.fill();
+  });
+}
+function house(ctx, x, y, s, color){
+  ctx.fillStyle = color; ctx.fillRect(x-60*s, y-60*s, 120*s, 60*s);
+  ctx.fillStyle = "#e74c3c"; ctx.beginPath();
+  ctx.moveTo(x-70*s, y-60*s); ctx.lineTo(x, y-105*s); ctx.lineTo(x+70*s, y-60*s); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#7d4e24"; ctx.fillRect(x-14*s, y-30*s, 28*s, 30*s);
+  ctx.fillStyle = "#aed6f1"; ctx.fillRect(x-48*s, y-48*s, 22*s, 22*s); ctx.fillRect(x+26*s, y-48*s, 22*s, 22*s);
+}
+/* Time of day: din (blue sky + sun), shaam (orange sky + low sun), raat (dark sky + moon + stars) */
+function skyForTime(ctx, w, h, time){
+  if(time === "night"){
+    sky(ctx, w, h, "#0b1e3a", "#274b7a");
+    ctx.fillStyle = "#fff";
+    [[80,60],[200,40],[350,80],[500,50],[650,90],[780,45],[880,100],[150,120],[420,110]].forEach(p=>{
+      ctx.beginPath(); ctx.arc(p[0], p[1], 3, 0, 7); ctx.fill();
+    });
+    ctx.fillStyle = "#f4f1de"; ctx.beginPath(); ctx.arc(w*0.85, h*0.14, 30, 0, 7); ctx.fill();
+    ctx.fillStyle = "#0b1e3a"; ctx.beginPath(); ctx.arc(w*0.85 - 12, h*0.14 - 6, 26, 0, 7); ctx.fill();
+    return;
+  }
+  if(time === "sunset"){
+    sky(ctx, w, h, "#ff9a5a", "#ffe3b3");
+    sun(ctx, w*0.85, h*0.3, 30);
+    cloud(ctx, w*0.15, h*0.12, 1); cloud(ctx, w*0.45, h*0.07, 0.8);
+    return;
+  }
+  sky(ctx, w, h, "#7ec8f7", "#e8f9ff");
+  sun(ctx, w*0.85, h*0.14, 34); cloud(ctx, w*0.15, h*0.12, 1); cloud(ctx, w*0.45, h*0.07, 0.8);
+}
+function drawProp(ctx, prop, w, h){
+  if(!prop || prop === "none") return;
+  ctx.save(); ctx.lineWidth = 3; ctx.strokeStyle = "#333";
+  if(prop === "tree"){ tree(ctx, w*0.88, h*0.78, 1.1); }
+  else if(prop === "bench"){
+    ctx.fillStyle = "#8B5A2B"; ctx.fillRect(w*0.8, h*0.62, w*0.14, 12);
+    ctx.fillStyle = "#c0392b"; ctx.fillRect(w*0.79, h*0.55, w*0.16, 10);
+    ctx.fillRect(w*0.80, h*0.67, 8, h*0.11); ctx.fillRect(w*0.93, h*0.67, 8, h*0.11);
+  }
+  else if(prop === "cart"){
+    ctx.fillStyle = "#8B5A2B"; ctx.fillRect(w*0.78, h*0.66, w*0.16, h*0.08);
+    ctx.fillStyle = "#e67e22"; ctx.beginPath(); ctx.arc(w*0.81, h*0.76, 12, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.91, h*0.76, 12, 0, 7); ctx.fill();
+    ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(w*0.86, h*0.62, 16, 0, 7); ctx.fill();
+  }
+  else if(prop === "books"){
+    ["#e74c3c","#2ecc71","#3498db"].forEach((c,i)=>{
+      ctx.fillStyle = c; ctx.fillRect(w*0.8 + i*14, h*0.72 - i*6, 12, 34 + i*4);
+    });
+  }
+  else if(prop === "lantern"){
+    ctx.strokeStyle = "#333"; ctx.beginPath(); ctx.moveTo(w*0.86, h*0.45); ctx.lineTo(w*0.86, h*0.52); ctx.stroke();
+    ctx.fillStyle = "#f39c12"; ctx.beginPath(); ctx.ellipse(w*0.86, h*0.58, 16, 22, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = "#ffe27a"; ctx.beginPath(); ctx.ellipse(w*0.86, h*0.58, 9, 14, 0, 0, 7); ctx.fill();
+  }
+  else if(prop === "ball"){
+    ctx.fillStyle = "#e74c3c"; ctx.beginPath(); ctx.arc(w*0.86, h*0.74, 22, 0, 7); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(w*0.86, h*0.74, 9, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawBackground(ctx, type, w, h, time){
+  ctx.clearRect(0,0,w,h);
+  time = time || "day";
+  if(type === "home"){
+    ctx.fillStyle = time === "night" ? "#e8b88a" : "#ffe0b3"; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = time === "night" ? "#d9a06b" : "#fff3e0"; ctx.fillRect(0,h*0.55,w,h*0.45);
+    ctx.fillStyle = time === "night" ? "#1c2f4a" : "#aed6f1"; ctx.fillRect(w*0.08,h*0.12,w*0.22,h*0.3);
+    ctx.strokeStyle = "#8d6e63"; ctx.lineWidth = 8; ctx.strokeRect(w*0.08,h*0.12,w*0.22,h*0.3);
+    ctx.beginPath(); ctx.moveTo(w*0.19,h*0.12); ctx.lineTo(w*0.19,h*0.42); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(w*0.08,h*0.27); ctx.lineTo(w*0.30,h*0.27); ctx.stroke();
+    ctx.fillStyle = "#e57373"; ctx.beginPath(); ctx.ellipse(w*0.5,h*0.82,w*0.3,h*0.07,0,0,7); ctx.fill();
+    ctx.fillStyle = "#8d6e63"; ctx.fillRect(w*0.72,h*0.45,w*0.16,h*0.1);
+    ctx.fillStyle = "#f9e79f"; ctx.fillRect(w*0.72,h*0.35,w*0.16,h*0.1);
+    return;
+  }
+  if(type === "mosque"){
+    skyForTime(ctx, w, h, time);
+    ground(ctx, w, h, time === "night" ? "#3d6b35" : "#7ec850");
+    ctx.fillStyle = "#f5f0e6";
+    ctx.fillRect(w*0.32, h*0.42, w*0.36, h*0.36);
+    ctx.beginPath(); ctx.arc(w*0.5, h*0.42, w*0.11, Math.PI, 0); ctx.fill();
+    ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(w*0.5, h*0.28, 8, 0, 7); ctx.fill();
+    ctx.fillRect(w*0.24, h*0.38, w*0.05, h*0.4); ctx.fillRect(w*0.71, h*0.38, w*0.05, h*0.4);
+    ctx.beginPath(); ctx.arc(w*0.265, h*0.38, w*0.035, Math.PI, 0); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.735, h*0.38, w*0.035, Math.PI, 0); ctx.fill();
+    ctx.fillStyle = "#7d4e24"; ctx.fillRect(w*0.47, h*0.66, w*0.06, h*0.12);
+    return;
+  }
+  skyForTime(ctx, w, h, time);
+  if(type === "village"){
+    ground(ctx, w, h, "#8bc34a");
+    house(ctx, w*0.18, h*0.78, 1.1, "#f9d976"); house(ctx, w*0.82, h*0.78, 1.0, "#a8d8ea");
+    tree(ctx, w*0.5, h*0.78, 1.2); tree(ctx, w*0.95, h*0.78, 0.9);
+    ctx.fillStyle = "#d9a066"; ctx.fillRect(0, h*0.86, w, h*0.05);
+  } else if(type === "school"){
+    ground(ctx, w, h, "#9ccc65");
+    ctx.fillStyle = "#fdebd0"; ctx.fillRect(w*0.25, h*0.3, w*0.5, h*0.48);
+    ctx.fillStyle = "#e74c3c"; ctx.fillRect(w*0.25, h*0.26, w*0.5, h*0.06);
+    ctx.fillStyle = "#2e86c1"; ctx.fillRect(w*0.47, h*0.55, w*0.06, h*0.23);
+    for(let i=0;i<4;i++){ ctx.fillStyle = "#aed6f1"; ctx.fillRect(w*(0.3+i*0.11), h*0.38, w*0.06, h*0.1); }
+    ctx.fillStyle = "#27ae60"; ctx.font = "bold 26px Arial"; ctx.textAlign = "center";
+    ctx.fillText("SCHOOL", w*0.5, h*0.36);
+    ctx.fillStyle = "#8B5A2B"; ctx.fillRect(w*0.5-3, h*0.12, 6, h*0.16);
+    ctx.fillStyle = "#2ecc71"; ctx.fillRect(w*0.5, h*0.12, 44, 26);
+    tree(ctx, w*0.12, h*0.78, 1.1); tree(ctx, w*0.88, h*0.78, 1.1);
+  } else if(type === "jungle"){
+    ground(ctx, w, h, "#5da24a");
+    tree(ctx, w*0.1, h*0.8, 1.5); tree(ctx, w*0.3, h*0.8, 1.2); tree(ctx, w*0.7, h*0.8, 1.4); tree(ctx, w*0.92, h*0.8, 1.1);
+    ctx.fillStyle = "#2e7d32"; [[0.2,0.85],[0.45,0.88],[0.6,0.84],[0.85,0.87]].forEach(p=>{
+      ctx.beginPath(); ctx.arc(w*p[0], h*p[1], 26, 0, 7); ctx.fill();
+    });
+  } else if(type === "park"){
+    ground(ctx, w, h, "#8bc34a");
+    tree(ctx, w*0.12, h*0.78, 1.2); tree(ctx, w*0.88, h*0.78, 1.2);
+    ctx.fillStyle = "#8B5A2B"; ctx.fillRect(w*0.42, h*0.62, w*0.16, 14);
+    ctx.fillStyle = "#c0392b"; ctx.fillRect(w*0.40, h*0.55, w*0.20, 12);
+    ctx.fillStyle = "#8B5A2B"; ctx.fillRect(w*0.41, h*0.67, 8, h*0.11); ctx.fillRect(w*0.59, h*0.67, 8, h*0.11);
+    ctx.strokeStyle = "#7f8c8d"; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(w*0.68, h*0.4); ctx.lineTo(w*0.68, h*0.62); ctx.moveTo(w*0.78, h*0.4); ctx.lineTo(w*0.78, h*0.62); ctx.stroke();
+    ctx.fillStyle = "#f1c40f"; ctx.fillRect(w*0.68, h*0.58, w*0.1, 10);
+  }
+}
+
+/* ================= DRAWING: CHARACTERS ================= */
+/* Hand-drawn feel: har character halka sa tedha (tiny tilt) khara hota hai aur lines gol hain —
+   machine-perfect seedhi lakeerein nahi. anim: {bobY, tilt, mouthOpen, legSwing} — optional. */
+function drawCharacter(ctx, id, cx, baseY, scale, expr, pose, anim){
+  const def = charDef(id); if(!def) return;
+  anim = anim || {};
+  const tilt0 = ((id.charCodeAt(0) + id.length) % 5 - 2) * 0.008; /* har character ka apna halka sa jhukao */
+  const S = scale;
+  const tall = def.build === "thin" ? 1.15 : def.build === "round" ? 0.95 : 1.0;
+  const wide = def.build === "round" ? 1.35 : def.build === "thin" ? 0.8 : 1.0;
+  const small = def.build === "small" ? 0.62 : 1.0;
+  const H = 150 * S * tall * small, W = 90 * S * wide * small;
+  const hipY = baseY - H*0.42, headR = 34 * S * small, headY = baseY - H + headR*0.9;
+  ctx.save();
+  ctx.translate(cx, baseY); ctx.rotate(tilt0 + (anim.tilt||0)); ctx.translate(-cx, -baseY);
+  ctx.translate(0, anim.bobY||0);
+  ctx.lineWidth = 3 * S; ctx.strokeStyle = "#333";
+  /* legs — walk cycle: chalte waqt taangein aage-peeche hoti hain */
+  ctx.fillStyle = "#5b4a3a";
+  const swing = (anim.legSwing||0) * 10 * S;
+  ctx.fillRect(cx - W*0.28 + swing, baseY - H*0.14, W*0.2, H*0.14);
+  ctx.fillRect(cx + W*0.08 - swing, baseY - H*0.14, W*0.2, H*0.14);
+  /* arms */
+  ctx.strokeStyle = def.skin; ctx.lineWidth = 10 * S; ctx.lineCap = "round";
+  const shoulderY = baseY - H*0.72, armLen = H*0.32;
+  if(pose === "wave"){
+    ctx.beginPath(); ctx.moveTo(cx - W*0.42, shoulderY); ctx.lineTo(cx - W*0.62, shoulderY - armLen*0.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + W*0.42, shoulderY); ctx.lineTo(cx + W*0.62, shoulderY - armLen); ctx.stroke();
+  } else if(pose === "point"){
+    ctx.beginPath(); ctx.moveTo(cx - W*0.42, shoulderY); ctx.lineTo(cx - W*0.6, shoulderY + armLen*0.4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + W*0.42, shoulderY); ctx.lineTo(cx + W*0.75, shoulderY - armLen*0.2); ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.moveTo(cx - W*0.42, shoulderY); ctx.lineTo(cx - W*0.55, shoulderY + armLen*0.8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + W*0.42, shoulderY); ctx.lineTo(cx + W*0.55, shoulderY + armLen*0.8); ctx.stroke();
+  }
+  /* body (kurta) */
+  ctx.fillStyle = def.shirt;
+  ctx.beginPath();
+  if(def.build === "round"){
+    ctx.ellipse(cx, baseY - H*0.42, W*0.62, H*0.36, 0, 0, 7);
+  } else {
+    ctx.moveTo(cx - W*0.45, baseY - H*0.78); ctx.lineTo(cx + W*0.45, baseY - H*0.78);
+    ctx.lineTo(cx + W*0.55, baseY - H*0.1); ctx.lineTo(cx - W*0.55, baseY - H*0.1); ctx.closePath();
+  }
+  ctx.fill(); ctx.stroke();
+  /* head */
+  ctx.fillStyle = def.skin;
+  ctx.beginPath(); ctx.arc(cx, headY, headR, 0, 7); ctx.fill(); ctx.stroke();
+  /* hair / cap / dupatta */
+  ctx.fillStyle = "#222";
+  if(id === "mother"){
+    ctx.fillStyle = def.shirt;
+    ctx.beginPath(); ctx.arc(cx, headY - 4*S, headR + 8*S, Math.PI, 0); ctx.fill();
+    ctx.fillRect(cx - headR - 8*S, headY - 4*S, 10*S, headR + 30*S);
+    ctx.fillRect(cx + headR - 2*S, headY - 4*S, 10*S, headR + 30*S);
+  } else if(id === "teacher"){
+    ctx.fillStyle = "#ddd";
+    ctx.beginPath(); ctx.arc(cx, headY - headR*0.55, headR*0.95, Math.PI, 0); ctx.fill();
+    ctx.strokeStyle = "#333"; ctx.lineWidth = 2*S;
+    ctx.strokeRect(cx - headR*0.75, headY - 4*S, headR*0.62, headR*0.4);
+    ctx.strokeRect(cx + headR*0.13, headY - 4*S, headR*0.62, headR*0.4);
+    ctx.beginPath(); ctx.moveTo(cx - headR*0.13, headY + 4*S); ctx.lineTo(cx + headR*0.13, headY + 4*S); ctx.stroke();
+  } else if(id === "child"){
+    ctx.fillStyle = "#f1c40f";
+    ctx.beginPath(); ctx.arc(cx, headY - headR*0.4, headR*0.95, Math.PI, 0); ctx.fill();
+    ctx.fillRect(cx - headR*0.95, headY - headR*0.55, headR*1.9, 8*S);
+  } else if(id === "golu"){
+    ctx.fillStyle = "#e67e22";
+    ctx.beginPath(); ctx.arc(cx, headY - headR*0.45, headR*0.9, Math.PI, 0); ctx.fill();
+    ctx.fillStyle = "#222";
+    ctx.beginPath(); ctx.arc(cx, headY - headR*0.9, headR*0.35, Math.PI, 0); ctx.fill();
+  } else if(id === "shopkeeper"){
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(cx - headR*0.8, headY - headR*1.05, headR*1.6, 12*S);
+    ctx.fillStyle = "#222";
+    ctx.beginPath(); ctx.ellipse(cx, headY + headR*0.45, headR*0.5, 8*S, 0, 0, 7); ctx.fill();
+  } else { /* chintu */
+    ctx.fillStyle = "#222";
+    ctx.beginPath(); ctx.moveTo(cx - headR, headY - headR*0.3);
+    ctx.lineTo(cx - headR*0.5, headY - headR*1.15); ctx.lineTo(cx, headY - headR*0.6);
+    ctx.lineTo(cx + headR*0.5, headY - headR*1.15); ctx.lineTo(cx + headR, headY - headR*0.3);
+    ctx.closePath(); ctx.fill();
+  }
+  /* eyes */
+  ctx.fillStyle = "#222";
+  const eyeY = headY - 4*S, eyeDX = headR*0.38;
+  if(expr === "happy"){
+    ctx.lineWidth = 3*S; ctx.strokeStyle = "#222";
+    ctx.beginPath(); ctx.arc(cx - eyeDX, eyeY, 7*S, Math.PI, 0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx + eyeDX, eyeY, 7*S, Math.PI, 0); ctx.stroke();
+  } else if(expr === "surprised"){
+    ctx.beginPath(); ctx.arc(cx - eyeDX, eyeY, 6*S, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + eyeDX, eyeY, 6*S, 0, 7); ctx.fill();
+  } else if(expr === "sad"){
+    ctx.beginPath(); ctx.arc(cx - eyeDX, eyeY + 2*S, 5*S, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + eyeDX, eyeY + 2*S, 5*S, 0, 7); ctx.fill();
+    ctx.fillStyle = "#5dade2";
+    ctx.beginPath(); ctx.arc(cx - eyeDX, eyeY + 16*S, 5*S, 0, 7); ctx.fill();
+  } else if(expr === "angry"){
+    /* ghussa: aadhi band aankhein + tedhi bhavein */
+    ctx.lineWidth = 3*S; ctx.strokeStyle = "#222";
+    ctx.beginPath(); ctx.moveTo(cx - eyeDX - 7*S, eyeY + 2*S); ctx.lineTo(cx - eyeDX + 7*S, eyeY + 2*S); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + eyeDX - 7*S, eyeY + 2*S); ctx.lineTo(cx + eyeDX + 7*S, eyeY + 2*S); ctx.stroke();
+    ctx.lineWidth = 4*S;
+    ctx.beginPath(); ctx.moveTo(cx - eyeDX - 9*S, eyeY - 14*S); ctx.lineTo(cx - eyeDX + 9*S, eyeY - 5*S); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + eyeDX + 9*S, eyeY - 14*S); ctx.lineTo(cx + eyeDX - 9*S, eyeY - 5*S); ctx.stroke();
+  } else { /* thinking */
+    ctx.beginPath(); ctx.arc(cx - eyeDX, eyeY, 5*S, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + eyeDX, eyeY, 5*S, 0, 7); ctx.fill();
+  }
+  /* mouth — lip-sync: bolte waqt munh khulta-band hota hai (anim.mouthOpen 0..1) */
+  ctx.strokeStyle = "#7b2d26"; ctx.lineWidth = 3.5*S; ctx.fillStyle = "#7b2d26";
+  const mouthY = headY + headR*0.42;
+  if(anim.mouthOpen != null && anim.mouthOpen > 0.12){
+    ctx.beginPath(); ctx.ellipse(cx, mouthY, 9*S, (3 + anim.mouthOpen*13)*S, 0, 0, 7); ctx.fill();
+  } else if(expr === "happy"){
+    ctx.beginPath(); ctx.arc(cx, mouthY - 6*S, 14*S, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke();
+  } else if(expr === "sad"){
+    ctx.beginPath(); ctx.arc(cx, mouthY + 12*S, 12*S, 1.15*Math.PI, 1.85*Math.PI); ctx.stroke();
+  } else if(expr === "angry"){
+    ctx.beginPath(); ctx.arc(cx, mouthY + 14*S, 11*S, 1.2*Math.PI, 1.8*Math.PI); ctx.stroke();
+  } else if(expr === "surprised"){
+    ctx.beginPath(); ctx.ellipse(cx, mouthY, 8*S, 11*S, 0, 0, 7); ctx.fill();
+  } else { /* thinking: small line + thought bubbles */
+    ctx.beginPath(); ctx.moveTo(cx - 6*S, mouthY); ctx.lineTo(cx + 6*S, mouthY); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.beginPath(); ctx.arc(cx + headR + 14*S, headY - headR*0.7, 6*S, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + headR + 26*S, headY - headR*1.0, 9*S, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + headR + 44*S, headY - headR*1.35, 13*S, 0, 7); ctx.fill();
+  }
+  /* teacher's book */
+  if(id === "teacher"){
+    ctx.fillStyle = "#c0392b"; ctx.fillRect(cx + W*0.35, baseY - H*0.5, W*0.34, H*0.22);
+    ctx.fillStyle = "#fff"; ctx.fillRect(cx + W*0.38, baseY - H*0.47, W*0.28, H*0.16);
+  }
+  ctx.restore();
+}
+
+/* ================= STAGE RENDERING + ANIMATION =================
+   Natural movement: har character apni chaal se scene mein chalta hai (ease-out, no snap),
+   phir halki saans (breathing) ke saath khara rehta hai; bolte waqt sir hilta hai aur munh khulta-band hota hai (lip-sync). */
+const stage = $("stage"), sctx = stage.getContext("2d");
+function wrapText(ctx, text, maxW){
+  const words = String(text||"").split(/\s+/); const lines = []; let line = "";
+  words.forEach(w=>{ const t = line ? line+" "+w : w;
+    if(ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t; });
+  if(line) lines.push(line); return lines;
+}
+let currentSceneIndex = 0, sceneEnterAt = 0, animRAF = null, exportingSpeaker = null;
+let renderMode = "scene"; /* scene | title | credits */
+function renderTitleCard(){
+  const g = sctx.createLinearGradient(0,0,960,540);
+  ["#ff5f6d","#ffc371","#2ecc71","#3498db","#9b59b6"].forEach((c,i)=>g.addColorStop(i/4, c));
+  sctx.fillStyle = g; sctx.fillRect(0,0,960,540);
+  sctx.fillStyle = "rgba(255,255,255,.92)";
+  sctx.beginPath(); sctx.roundRect(60, 90, 840, 360, 24); sctx.fill();
+  sctx.fillStyle = "#0A1931"; sctx.textAlign = "center";
+  sctx.font = "bold 26px 'Comic Sans MS', cursive";
+  sctx.fillText(state.mode === "movie" ? "🎥  EK CARTOON FILM  🎥" : "🎬  EK CARTOON KAHANI  🎬", 480, 160);
+  sctx.font = "bold 52px 'Comic Sans MS', cursive";
+  const lines = wrapText(sctx, state.title || "Meri Kahani", 740);
+  lines.slice(0,3).forEach((ln,i)=> sctx.fillText(ln, 480, 240 + i*62));
+  sctx.font = "22px Arial";
+  sctx.fillStyle = "#555";
+  sctx.fillText("Characters: " + CHARACTERS.filter(c=>state.scenes.some(s=>s.chars.some(x=>x.id===c.id))).map(c=>charName(c.id)).join(" • "), 480, 380);
+  sctx.fillText("Haath se banaya gaya — Original Natural", 480, 420);
+  if(typeof cardLine !== "undefined" && cardLine){
+    sctx.fillStyle = "#e67e22"; sctx.font = "bold 26px 'Comic Sans MS', cursive";
+    sctx.fillText(cardLine, 480, 300);
+  }
+  sctx.textAlign = "left";
+}
+function renderCredits(){
+  sctx.fillStyle = "#0A1931"; sctx.fillRect(0,0,960,540);
+  sctx.fillStyle = "#FFC300"; sctx.textAlign = "center";
+  sctx.font = "bold 44px 'Comic Sans MS', cursive";
+  sctx.fillText("THE END", 480, 120);
+  sctx.fillStyle = "#fff"; sctx.font = "24px Arial";
+  sctx.fillText("Kahani: " + (state.title || "Meri Kahani"), 480, 200);
+  sctx.fillText("Characters: " + CHARACTERS.filter(c=>state.scenes.some(s=>s.chars.some(x=>x.id===c.id))).map(c=>charName(c.id)).join(" • "), 480, 250);
+  sctx.fillText("Awaaz: Har character ki apni awaaz", 480, 300);
+  sctx.fillText("Banaya gaya: Cartoon Maker se", 480, 350);
+  sctx.fillStyle = "#FFC300"; sctx.font = "bold 28px 'Comic Sans MS', cursive";
+  sctx.fillText("Shukriya — phir milenge!", 480, 430);
+  sctx.textAlign = "left";
+}
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const MOVE_FREQ = {waddle:2.2, springy:5, hop:3.5, slow:1.6, gentle:2, sturdy:2.6};
+const MOVE_AMP  = {waddle:6, springy:8, hop:11, slow:3, gentle:2, sturdy:4};
+function drawScene(i){
+  renderMode = "scene";
+  currentSceneIndex = i; sceneEnterAt = performance.now();
+  renderFrame(performance.now());
+}
+function showTitleCard(){ renderMode = "title"; renderFrame(performance.now()); }
+function showCredits(){ renderMode = "credits"; renderFrame(performance.now()); }
+function renderFrame(now){
+  if(renderMode === "title"){ renderTitleCard(); return; }
+  if(renderMode === "credits"){ renderCredits(); return; }
+  const t = now/1000;
+  const sc = state.scenes[currentSceneIndex];
+  if(!sc){ sctx.clearRect(0,0,960,540); return; }
+  drawBackground(sctx, sc.bg, 960, 540, sc.time);
+  drawProp(sctx, sc.prop, 960, 540);
+  const ang = ANGLES.find(a=>a.id===sc.angle) || ANGLES[1];
+  const scale = ang.scale;
+  const enterP = Math.min(1, (now - sceneEnterAt)/1400); /* 1.4s walk-in */
+  const enterE = easeOutCubic(enterP);
+  sc.chars.forEach((ch, k)=>{
+    const def = charDef(ch.id);
+    const posDef = POSITIONS.find(p=>p.id===(ch.pos||"left")) || POSITIONS[0];
+    const targetX = posDef.x;
+    const startX = targetX < 480 ? -80 : 1040; /* scene ke bahar se andar chalna */
+    const x = startX + (targetX - startX) * enterE;
+    const move = (def && def.move) || "slow";
+    const freq = MOVE_FREQ[move] || 2, amp = MOVE_AMP[move] || 4;
+    const walking = enterP < 1;
+    const phase = t * freq;
+    let bobY, tilt, legSwing;
+    if(walking){
+      bobY = -Math.abs(Math.sin(phase * Math.PI)) * amp;
+      tilt = Math.sin(phase * Math.PI) * (move === "waddle" ? 0.07 : 0.03);
+      legSwing = Math.sin(phase * Math.PI);
+      if(move === "hop") bobY = -Math.max(0, Math.sin(phase * Math.PI)) * amp * 1.4;
+    } else {
+      bobY = -Math.abs(Math.sin(t * 1.5 + k * 1.3)) * 2; /* saans lena (breathing) */
+      tilt = Math.sin(t * 1.2 + k) * 0.015;
+      legSwing = 0;
+    }
+    /* Lip-sync: bolte hue munh khulta-band hota hai; sir halka hilta hai (nod) */
+    let mouthOpen = null;
+    const isSpeaking = speakingChar === ch.id || (exporting && exportingSpeaker === ch.id);
+    if(isSpeaking){
+      const m = (Math.sin(t * 9) + Math.sin(t * 5.3 + 1.7)) / 2; /* irregular — machine-regular nahi */
+      mouthOpen = Math.max(0.1, (m * 0.5 + 0.5));
+      tilt += Math.sin(t * 2.4) * 0.03;
+    }
+    drawCharacter(sctx, ch.id, x, 470, scale, ch.expr, ch.pose, {bobY, tilt, mouthOpen, legSwing});
+  });
+  /* AUTO-SUBTITLES: har dialogue line screen par subtitle ki tarah — awaaz ke saath sync mein.
+     Bolte waqt sirf wohi tukda dikhta hai jo bola ja raha hai (currentChunk);
+     idle/export mein poora dialogue. Dark band + white bold text = parhne mein aasan. */
+  const subs = state.subtitles || {on:true, size:"medium", pos:"bottom"};
+  let text = sc.dialogue || "";
+  let speaker = sc.speaker;
+  if(speakingChar){ text = currentChunk || text; speaker = speakingChar; }
+  if(subs.on && text){
+    const fontSize = subs.size==="large" ? 32 : subs.size==="small" ? 22 : 26;
+    sctx.font = "bold "+fontSize+"px Arial";
+    const lines = wrapText(sctx, charName(speaker)+": "+text, 860);
+    const lineH = fontSize + 8;
+    const boxH = lines.length*lineH + 24;
+    const bx = 40;
+    const by = subs.pos==="top" ? 14 : 540 - boxH - 14;
+    sctx.fillStyle = "rgba(10,25,49,.85)";
+    sctx.beginPath(); sctx.roundRect(bx, by, 880, boxH, 14); sctx.fill();
+    sctx.fillStyle = "#fff"; sctx.textAlign = "left"; sctx.textBaseline = "middle";
+    lines.forEach((ln, li)=> sctx.fillText(ln, bx+20, by + 14 + li*lineH + lineH/2));
+  }
+  sctx.textAlign = "left"; sctx.textBaseline = "alphabetic";
+}
+function startLoop(){
+  if(animRAF || typeof requestAnimationFrame !== "function") return;
+  const step = now => { renderFrame(now); animRAF = requestAnimationFrame(step); };
+  animRAF = requestAnimationFrame(step);
+}
+function drawCurrent(){ drawScene(activeScene); updateSubtitle(activeScene); }
+function updateSubtitle(i){
+  const sc = state.scenes[i];
+  if(!sc){ $("subtitle").innerHTML = "<span class='spk'>—</span><br>Koi scene nahi hai."; return; }
+  $("subtitle").innerHTML = "<span class='spk'>"+charName(sc.speaker)+":</span> " +
+    (sc.dialogue ? sc.dialogue.replace(/</g,"&lt;") : "<i>(is scene ka dialogue khaali hai)</i>");
+}
+
+/* ================= VOICEOVER — HAR CHARACTER KI APNI AWAAZ =================
+   Har character ko alag system voice (agar device par milti ho) + apni pitch/rate milti hai.
+   Agar device par sirf 1 awaaz ho to farq sirf pitch/speed se hota hai — UI mein saaf likha jata hai. */
+let urduVoice = null, voicesReady = false, assignedVoice = {};
+let speakingChar = null, speakToken = 0, currentChunk = ""; /* jo tukda abhi bola ja raha hai — subtitle sync */
+/* Subtitle bar (neeche) + canvas subtitle — dono ko ek saath update karna. */
+function setLiveSubtitle(text, speakerId){
+  currentChunk = text || "";
+  const el = $("subtitle");
+  if(!el) return;
+  el.innerHTML = "<span class='spk'>"+charName(speakerId||"golu")+":</span> " +
+    (text ? text.replace(/</g,"&lt;") : "");
+}
+function applySubSettings(){
+  const s = state.subtitles || {on:true, size:"medium", pos:"bottom"};
+  const tgl = $("subToggle"); if(tgl) tgl.checked = !!s.on;
+  const sz = $("subSize"); if(sz) sz.value = s.size||"medium";
+  const ps = $("subPos"); if(ps) ps.value = s.pos||"bottom";
+  const bar = $("subtitle"); if(bar) bar.style.display = s.on ? "" : "none";
+  drawCurrent();
+}
+function checkVoices(){
+  if(!("speechSynthesis" in window)){
+    $("voiceStatus").textContent = "⚠️ Is browser/device mein awaaz (speech synthesis) nahi hai — preview baghair awaaz ke chalega.";
+    $("voiceStatus").className = "status warn"; return;
+  }
+  const vs = window.speechSynthesis.getVoices();
+  voicesReady = vs.length > 0;
+  urduVoice = vs.find(v=>/ur/i.test(v.lang)) || null;
+  /* Assign a DIFFERENT system voice to each character where possible (prefer Urdu voices). */
+  const pool = vs.filter(v=>/ur/i.test(v.lang));
+  const rest = vs.filter(v=>!/ur/i.test(v.lang));
+  const ordered = pool.concat(rest);
+  assignedVoice = {};
+  CHARACTERS.forEach((c, i)=>{
+    if(ordered.length === 0) return;
+    const saved = state.voiceSettings[c.id] && state.voiceSettings[c.id].voiceURI;
+    const bySaved = saved && ordered.find(v=>v.voiceURI === saved);
+    assignedVoice[c.id] = bySaved || ordered[i % ordered.length];
+  });
+  CHARACTERS.forEach(c=>updateVoiceName(c.id));
+  const distinct = new Set(Object.values(assignedVoice).map(v=>v && v.voiceURI)).size;
+  if(urduVoice){
+    $("voiceStatus").textContent = "✅ Urdu awaaz mil gayi (" + urduVoice.name + "). Har character ki apni awaaz hai — " +
+      (distinct > 1 ? distinct + " alag system awazein istemal ho rahi hain" : "is device par sirf 1 system awaaz hai, is liye farq pitch aur speed se hoga") +
+      ". Preview mein dialogue bolne wale character ki awaaz mein bola jayega.";
+    $("voiceStatus").className = "status ok";
+  } else if(vs.length){
+    $("voiceStatus").textContent = "⚠️ Urdu awaaz is device par nahi mili — dialogue behtareen available awaaz mein bola jayega (aksar English jaisa lagega). " +
+      (distinct > 1 ? distinct + " alag system awazein hain, har character phir bhi alag lagega." : "Sirf 1 system awaaz hai, farq pitch aur speed se hoga.");
+    $("voiceStatus").className = "status warn";
+  } else {
+    $("voiceStatus").textContent = "Awaaz abhi load ho rahi hai…";
+  }
+}
+/* Natural pacing: dialogue ko punctuation par tukron mein bolna — har tukre ke baad fitri waqfa.
+   Har tukre mein pitch mein halki tabdeeli (flat monotone nahi), taake awaaz insaan jaisi lage. */
+function speakChunks(text){
+  const parts = String(text).match(/[^.!?،۔,;]+[.!?،۔,;]?/g) || [String(text)];
+  return parts.map(p=>p.trim()).filter(Boolean);
+}
+async function speak(text, speakerId){
+  const myToken = ++speakToken;
+  speakingChar = speakerId || null;
+  if(!text || !text.trim()){ await sleep(500); if(myToken===speakToken) speakingChar = null; return; }
+  if(!("speechSynthesis" in window)){
+    /* Awaaz nahi hai — subtitle hi dikhaye, line ki lambai ke hisaab se waqfa */
+    setLiveSubtitle(text, speakerId);
+    await sleep(Math.min(9000, 1500 + text.length*90));
+    if(myToken===speakToken) speakingChar = null;
+    return;
+  }
+  const v = voiceOf(speakerId || "golu");
+  const chunks = speakChunks(text);
+  await sleep(350); /* bolne se pehle fitri waqfa — jaise aadmi saans leta hai */
+  for(let ci=0; ci<chunks.length; ci++){
+    if(myToken !== speakToken){ speakingChar = null; return; }
+    setLiveSubtitle(chunks[ci], speakerId); /* subtitle awaaz ke saath badle — synced */
+    await new Promise(res=>{
+      const u = new SpeechSynthesisUtterance(chunks[ci]);
+      const av = assignedVoice[speakerId] || urduVoice;
+      if(av){ u.voice = av; u.lang = av.lang; } else u.lang = "ur-PK";
+      /* pitch variation within a line — halka utaar-chadhao, flat monotone nahi */
+      const variation = [0, 0.06, -0.04, 0.08, -0.06, 0.03][ci % 6];
+      u.pitch = Math.min(2, Math.max(0.3, v.pitch + variation));
+      u.rate = v.rate;
+      let done = false;
+      const fin = ()=>{ if(!done){ done = true; res(); } };
+      u.onend = fin; u.onerror = fin;
+      window.speechSynthesis.speak(u);
+      setTimeout(fin, Math.min(12000, 1500 + chunks[ci].length*160));
+    });
+    if(myToken !== speakToken){ speakingChar = null; return; }
+    const last = chunks[ci].slice(-1);
+    await sleep(/[.!?۔]/.test(last) ? 450 : /[,،;]/.test(last) ? 280 : 180);
+  }
+  if(myToken === speakToken) speakingChar = null;
+}
+
+/* ================= PLAYBACK =================
+   Movie mode: pehle title card (3.5s) → har act se pehle act ka title card (2.5s)
+   → scenes → ending + credits (5s). Short mode: sirf scenes. */
+let cardLine = ""; /* title card par dikhane wali extra line (masalan act ka naam) */
+async function playAll(){
+  if(state.scenes.length === 0){ alert("Pehle kam az kam ek scene banayein."); return; }
+  stopAll(); playing = true;
+  const isMovie = state.mode === "movie";
+  if(isMovie){
+    cardLine = "🎥 Ek Cartoon Film";
+    showTitleCard();
+    await sleep(3500); cardLine = "";
+    if(!playing){ playing = false; return; }
+  }
+  let lastAct = -1;
+  for(let i=0; i<state.scenes.length && playing; i++){
+    const sc = state.scenes[i];
+    if(isMovie && (sc.act||0) !== lastAct){
+      lastAct = sc.act||0;
+      const at = (state.actTitles||[])[lastAct] || ("Part " + (lastAct+1));
+      cardLine = "Part " + (lastAct+1) + " — " + at;
+      showTitleCard();
+      $("subtitle").innerHTML = "<span class='spk'>Part " + (lastAct+1) + ":</span> " + at.replace(/</g,"&lt;");
+      await sleep(2500); cardLine = "";
+      if(!playing) break;
+    }
+    activeScene = i; drawScene(i); updateSubtitle(i);
+    await speak(sc.dialogue, sc.speaker);
+    if(playing && !sc.dialogue) await sleep(2500);
+    if(playing) await sleep(500); /* lines ke beech saans lene ka waqfa — natural pause */
+  }
+  if(playing && isMovie){
+    showCredits(); await sleep(5000);
+    renderMode = "scene"; drawCurrent();
+  }
+  playing = false;
+}
+function stopAll(){
+  playing = false; speakToken++; speakingChar = null; currentChunk = "";
+  if("speechSynthesis" in window) window.speechSynthesis.cancel();
+  if(playTimer){ clearTimeout(playTimer); playTimer = null; }
+}
+
+/* ================= EXPORT VIDEO ================= */
+function sceneDuration(sc){
+  const words = (sc.dialogue||"").split(/\s+/).filter(Boolean).length;
+  return Math.max(3000, Math.min(9000, 2000 + words*450));
+}
+/* Export: movie mode mein poori film — title card → har act ka title → scenes → credits.
+   onlyIdxs diya jaye (per-act export) to sirf woh scenes, baghair title/credits ke.
+   Progress har step par dikhaya jata hai. Lambi videos ke liye koi artificial cap nahi. */
+/* ================= SUBTITLES FILE (.srt) =================
+   Export ke waqt video ke saath .srt bhi ban jati hai — timing bilkul wohi jo export
+   mein istemal hoti hai (title card 3.5s, act card 2.5s, har scene sceneDuration).
+   YouTube par video ke saath upload kar sakte hain. */
+function srtTime(ms){
+  ms = Math.max(0, Math.round(ms));
+  const s = Math.floor(ms/1000), m = Math.floor(s/60), h = Math.floor(m/60);
+  const p = (n,l)=>String(n).padStart(l||2,"0");
+  return p(h)+":"+p(m%60)+":"+p(s%60)+","+p(ms%1000,3);
+}
+function buildSRT(idxs, fullMovie){
+  const list = idxs || state.scenes.map((_,i)=>i);
+  const isMovie = !!fullMovie && state.mode === "movie";
+  let t = 0, n = 0;
+  const out = [];
+  if(isMovie) t += 3500; /* title card */
+  let lastAct = -1;
+  list.forEach(i=>{
+    const sc = state.scenes[i];
+    if(!sc) return;
+    if(isMovie && (sc.act||0)!==lastAct){ lastAct = sc.act||0; t += 2500; } /* act title card */
+    const dur = sceneDuration(sc);
+    if(sc.dialogue && sc.dialogue.trim()){
+      n++;
+      out.push(n + "\n" + srtTime(t) + " --> " + srtTime(t+dur) + "\n" + charName(sc.speaker) + ": " + sc.dialogue.trim() + "\n");
+    }
+    t += dur;
+  });
+  return out.join("\n");
+}
+function srtFileName(suffix){
+  const fname = (state.title||"cartoon").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-").toLowerCase() || "cartoon";
+  return fname + (suffix||"") + ".srt";
+}
+function downloadSRTFile(name, content){
+  if(typeof URL === "undefined" || !URL.createObjectURL){
+    $("exportStatus").textContent = "⚠️ Is browser mein file download nahi hoti.";
+    $("exportStatus").className = "status warn"; return false;
+  }
+  const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.textContent = "⬇️ Subtitles download karein: " + name;
+  a.className = "btn green"; a.style.display = "inline-block"; a.style.marginTop = "10px";
+  $("downloadArea").appendChild(a);
+  return true;
+}
+function downloadSRT(){
+  const srt = buildSRT(undefined, state.mode === "movie"); /* movie ho to title/act cards ki timing bhi shamil */
+  if(!srt){ $("exportStatus").textContent = "⚠️ Koi dialogue nahi hai — pehle scenes mein dialogue likhein."; $("exportStatus").className = "status warn"; return; }
+  if(downloadSRTFile(srtFileName(), srt)){
+    $("exportStatus").textContent = "✅ Subtitles (.srt) tayyar hain! Upar download dabayein — YouTube par video ke saath upload kar sakte hain.";
+    $("exportStatus").className = "status ok";
+  }
+}
+async function exportVideo(onlyIdxs, suffix){
+  if(exporting) return;
+  if(state.scenes.length === 0){ alert("Pehle kam az kam ek scene banayein."); return; }
+  if(!("MediaRecorder" in window) || !stage.captureStream){
+    $("exportStatus").textContent = "⚠️ Is browser mein video export nahi hota (MediaRecorder/canvas capture nahi hai). Preview dekh kar screen recording istemal karein.";
+    $("exportStatus").className = "status warn"; return;
+  }
+  const idxs = (Array.isArray(onlyIdxs) && onlyIdxs.length) ? onlyIdxs : state.scenes.map((_,i)=>i);
+  if(!idxs.length){ alert("Is hisse mein koi scene nahi hai."); return; }
+  const fullMovie = !onlyIdxs && state.mode === "movie";
+  const totalMin = estimateTotalMs()/60000;
+  exporting = true; stopAll();
+  $("exportStatus").textContent = "⏳ Video ban rahi hai… (har scene record ho raha hai, screen par scenes nazar aayenge)" +
+    (totalMin > 10 ? " Lambi video (" + fmtDuration(estimateTotalMs()) + ") — file badi ho sakti hai aur RAM zyada istemal hogi; agar browser atak jaye to Part-wise export istemal karein." : "");
+  $("exportStatus").className = "status";
+  const stream = stage.captureStream(30);
+  let mime = "video/webm";
+  if(!MediaRecorder.isTypeSupported(mime)) mime = "";
+  const rec = new MediaRecorder(stream, mime ? {mimeType:mime, videoBitsPerSecond: 5_000_000} : undefined);
+  const chunks = [];
+  rec.ondataavailable = e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+  const done = new Promise(res=>{ rec.onstop = res; });
+  rec.start(200);
+  if(fullMovie){
+    cardLine = "🎥 Ek Cartoon Film";
+    showTitleCard();
+    $("exportStatus").textContent = "⏳ Title card record ho raha hai…";
+    await sleep(3500); cardLine = "";
+  }
+  let lastAct = -1;
+  for(let n=0; n<idxs.length; n++){
+    const i = idxs[n];
+    const sc = state.scenes[i];
+    if(fullMovie && (sc.act||0) !== lastAct){
+      lastAct = sc.act||0;
+      const at = (state.actTitles||[])[lastAct] || ("Part " + (lastAct+1));
+      cardLine = "Part " + (lastAct+1) + " — " + at;
+      showTitleCard();
+      $("exportStatus").textContent = "⏳ Part " + (lastAct+1) + " ka title record ho raha hai…";
+      await sleep(2500); cardLine = "";
+    }
+    activeScene = i; drawScene(i); updateSubtitle(i);
+    exportingSpeaker = sc.speaker; /* export mein bhi munh hile — lip-sync jaisa */
+    $("exportStatus").textContent = "⏳ Scene " + (n+1) + "/" + idxs.length + " record ho raha hai… (kul " + fmtDuration(estimateTotalMs()) + ")";
+    await sleep(sceneDuration(sc));
+    exportingSpeaker = null;
+  }
+  if(fullMovie){
+    showCredits();
+    $("exportStatus").textContent = "⏳ Ending + credits record ho rahe hain…";
+    await sleep(5000);
+    renderMode = "scene";
+  }
+  rec.stop(); await done;
+  const blob = new Blob(chunks, {type: mime || "video/webm"});
+  if(typeof URL === "undefined" || !URL.createObjectURL){
+    $("exportStatus").textContent = "⚠️ Video ban gayi lekin is browser mein download link nahi ban saka.";
+    $("exportStatus").className = "status warn"; exporting = false; return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const fname = (state.title||"cartoon").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-").toLowerCase() || "cartoon";
+  a.href = url; a.download = fname + (suffix||"") + ".webm"; a.textContent = "⬇️ Video download karein: " + fname + (suffix||"") + ".webm (" + (blob.size/1048576).toFixed(1) + " MB)";
+  a.className = "btn green"; a.style.display = "inline-block"; a.style.marginTop = "10px";
+  const area = $("downloadArea"); area.innerHTML = ""; area.appendChild(a);
+  const srt = buildSRT(idxs, fullMovie);
+  if(srt) downloadSRTFile(srtFileName(suffix), srt);
+  $("exportStatus").textContent = "✅ Video tayyar hai! Upar download dabayein." + (srt ? " Subtitles (.srt) bhi ban gayi hain — YouTube par video ke saath alag se upload kar sakte hain." : "") + " Yaad rahe: is video mein awaaz (audio) nahi hogi — sirf tasveer + likha hua dialogue.";
+  $("exportStatus").className = "status ok";
+  exporting = false;
+}
+/* Per-act export: sirf ek part ki video (lambi film ke liye RAM bachane ka tareeqa). */
+async function exportAct(ai){
+  const idxs = state.scenes.map((s,i)=>s.act===ai?i:-1).filter(i=>i>=0);
+  if(!idxs.length){ alert("Is part mein koi scene nahi hai."); return; }
+  await exportVideo(idxs, "-part" + (ai+1));
+}
+
+/* ================= SAVE / LOAD ================= */
+function saveStory(){
+  try{
+    localStorage.setItem("cartoonMakerStory", JSON.stringify(state));
+    $("saveStatus").textContent = "✅ Kahani is browser mein save ho gayi (" + new Date().toLocaleString() + ").";
+    $("saveStatus").className = "status ok";
+  }catch(e){ $("saveStatus").textContent = "⚠️ Save nahi ho saki: " + e.message; }
+}
+function loadSaved(){
+  try{
+    const raw = localStorage.getItem("cartoonMakerStory");
+    if(raw){ const s = JSON.parse(raw); if(s && Array.isArray(s.scenes)){ s.mode = s.mode||"short"; s.actTitles = Array.isArray(s.actTitles)?s.actTitles:[]; s.subtitles = Object.assign({on:true,size:"medium",pos:"bottom"}, s.subtitles||{}); state = s; return true; } }
+  }catch(e){}
+  return false;
+}
+function exportStoryJSON(){
+  if(typeof URL === "undefined" || !URL.createObjectURL){
+    $("saveStatus").textContent = "⚠️ Is browser mein file download nahi hoti — 'Save' wala button istemal karein.";
+    $("saveStatus").className = "status warn"; return;
+  }
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = (state.title||"cartoon").replace(/\s+/g,"-").toLowerCase() + "-story.json";
+  a.click(); URL.revokeObjectURL(url);
+}
+function loadStory(obj){
+  if(!obj || !Array.isArray(obj.scenes)){ alert("Ye kahani file theek nahi hai."); return; }
+  state.title = obj.title || "Meri Kahani";
+  state.category = obj.category || "comedy";
+  state.mode = obj.mode === "movie" ? "movie" : "short";
+  state.actTitles = Array.isArray(obj.actTitles) ? obj.actTitles.slice(0,3) : [];
+  state.subtitles = Object.assign({on:true, size:"medium", pos:"bottom"}, obj.subtitles||{});
+  state.charNames = Object.assign({golu:"Golu",chintu:"Chintu",teacher:"Ustaad Rahim",mother:"Ammi",shopkeeper:"Lala Jee",child:"Bilal"}, obj.charNames||{});
+  state.voiceSettings = Object.assign(defaultVoiceSettings(), obj.voiceSettings||{});
+  state.scenes = obj.scenes.map(s=>normalizeScene({bg:s.bg||"village", chars:(s.chars||[]).slice(0,2), speaker:s.speaker||"golu", dialogue:s.dialogue||"", act:s.act, time:s.time, angle:s.angle, prop:s.prop, climax:s.climax}));
+  activeScene = 0;
+  syncStoryInputs(); renderCharGrid(); renderScenes(); applySubSettings(); drawCurrent();
+}
+function syncStoryInputs(){
+  $("storyTitle").value = state.title;
+  $("storyCat").value = state.category;
+  if($("modeSelect")) $("modeSelect").value = state.mode || "short";
+}
+
+/* ================= PROMPT SE VIDEO =================
+   User apna story prompt likhta hai — tool usay parh kar POORA video project bana deta hai:
+   characters, scenes, dialogues, backgrounds, voices, movements, title, ending.
+   IMAANDARI SE: ye koi AI nahi hai — ek smart rule-based builder hai jo prompt ke lafzon,
+   jumlon aur keywords se project banata hai. Banne ke baad har cheez edit ho sakti hai. */
+function splitPromptSentences(text){
+  return String(text).split(/[\n.!?۔]+/).map(s=>s.trim()).filter(s=>s.length>1);
+}
+function detectPrompt(text){
+  const t = " " + text.toLowerCase() + " ";
+  const chars = [];
+  const add = id=>{ if(!chars.includes(id)) chars.push(id); };
+  if(/golu|golo|mota/.test(t)) add("golu");
+  if(/chintu|chinto|patla|hoshiyar|clever/.test(t)) add("chintu");
+  if(/ustaad|teacher|master|ustad/.test(t)) add("teacher");
+  if(/ammi|mother|\bma\b/.test(t)) add("mother");
+  if(/lala|dukaan|shop|dukandar/.test(t)) add("shopkeeper");
+  if(/bilal|bacha|beta|child|kid/.test(t)) add("child");
+  if(/dost|friend/.test(t)){ add("golu"); add("chintu"); }
+  if(!chars.length){ add("golu"); add("chintu"); }
+  let bg = "village";
+  if(/jungle|forest/.test(t)) bg="jungle";
+  else if(/school|madrasa|madarsa/.test(t)) bg="school";
+  else if(/\bghar\b|home/.test(t)) bg="home";
+  else if(/park/.test(t)) bg="park";
+  else if(/masjid|mosque|namaz/.test(t)) bg="mosque";
+  else if(/gaon|village/.test(t)) bg="village";
+  const islamic = /sach|imaandari|namaz|allah|madad|akhlaaq|shukr|roza|quran|nek|bhalai/.test(t);
+  return {chars, bg, islamic};
+}
+function exprFromText(s){
+  const t = s.toLowerCase();
+  if(/khush|maza|hans|has|mubarak|jeet|kamyab/.test(t)) return "happy";
+  if(/udaas|dukhi|ro |rona|pareshan|afsoos/.test(t)) return "sad";
+  if(/hairan|acha|kya|wow|ajib/.test(t)) return "surprised";
+  if(/ghussa|gussa|naraaz/.test(t)) return "angry";
+  if(/soch|faisla|samajh/.test(t)) return "thinking";
+  return "happy";
+}
+function buildFromPrompt(text){
+  const sentences = splitPromptSentences(text);
+  if(!sentences.length) return null;
+  const det = detectPrompt(text);
+  const isMovie = sentences.length >= 8 || text.length > 500;
+  const maxAuto = 20; /* prompt se zyada se zyada 20 scenes — baaki haath se add karein (koi video limit nahi) */
+  const used = sentences.slice(0, maxAuto);
+  const bgs = ["village","jungle","school","home","park","mosque"];
+  const times = ["day","sunset","night","day"];
+  const angles = ["wide","medium","close"];
+  const props = ["none","tree","bench","cart","books","lantern","ball"];
+  const scenes = used.map((s, i)=>{
+    const low = s.toLowerCase();
+    const speaker = det.chars.find(c=> low.includes(charName(c).toLowerCase()) || low.includes(c)) || det.chars[i % det.chars.length];
+    const others = det.chars.filter(c=>c!==speaker);
+    const second = (i % 2 === 0 && others.length) ? others[0] : null;
+    const chars = [{id:speaker, expr:exprFromText(s), pose:"stand", pos: i%2===0 ? "left" : "center"}];
+    if(second) chars.push({id:second, expr:"happy", pose:"stand", pos:"right"});
+    let bg = det.bg;
+    if(/jungle/.test(low)) bg="jungle";
+    else if(/school|madrasa/.test(low)) bg="school";
+    else if(/ghar/.test(low)) bg="home";
+    else if(/park/.test(low)) bg="park";
+    else if(/masjid|namaz/.test(low)) bg="mosque";
+    else if(i>0) bg = bgs[(bgs.indexOf(det.bg)+i) % bgs.length]; /* har scene alag background */
+    return {
+      bg, chars, speaker, dialogue: s,
+      act: isMovie ? Math.min(2, Math.floor(i / Math.ceil(used.length/3))) : 0,
+      time: times[i % times.length],
+      angle: angles[i % angles.length],
+      prop: props[(i*2+1) % props.length],
+      climax: isMovie && i === Math.floor(used.length*0.75)
+    };
+  });
+  for(let i=1; i<scenes.length; i++){
+    let guard = 0;
+    while(sceneSignature(scenes[i]) === sceneSignature(scenes[i-1]) && guard < 8){ varyScene(scenes[i], scenes[i-1]); guard++; }
+  }
+  const titleWords = sentences[0].split(/\s+/).slice(0,6).join(" ");
+  return {
+    title: titleWords ? titleWords.charAt(0).toUpperCase() + titleWords.slice(1) : "Meri Kahani",
+    category: det.islamic ? "islamic" : "comedy",
+    mode: isMovie ? "movie" : "short",
+    actTitles: isMovie ? ["Shuruaat","Mushkil","Aakhir"] : [],
+    scenes,
+    truncated: sentences.length > maxAuto
+  };
+}
+
+/* ================= INIT ================= */
+$("storyTitle").addEventListener("input", e=>{ state.title = e.target.value; });
+$("storyCat").addEventListener("change", e=>{ state.category = e.target.value; });
+$("modeSelect").addEventListener("change", e=>{
+  state.mode = e.target.value;
+  if(state.mode === "movie" && (!state.actTitles || !state.actTitles.length)) state.actTitles = ["Shuruaat","Mushkil","Aakhir"];
+  renderScenes();
+});
+$("btnSampleComedy").addEventListener("click", ()=>{ loadStory(JSON.parse(JSON.stringify(SAMPLE_COMEDY))); });
+$("btnSampleIslamic").addEventListener("click", ()=>{ loadStory(JSON.parse(JSON.stringify(SAMPLE_ISLAMIC))); });
+$("btnSampleMovie").addEventListener("click", ()=>{ loadStory(JSON.parse(JSON.stringify(SAMPLE_MOVIE))); });
+$("btnAddAct").addEventListener("click", ()=>{
+  if(state.actTitles.length >= 3){ alert("Zyada se zyada 3 parts (acts) hain."); return; }
+  state.actTitles.push("Part " + (state.actTitles.length+1));
+  renderMoviePanel();
+});
+$("btnPromptExample").addEventListener("click", ()=>{
+  $("promptInput").value = "Golu aur Chintu gaon mein aam churate hain. Lala Jee unhein pakar leta hai. Dono dar jate hain. Ustaad Rahim samjhata hai ke chori buri baat hai. Golu aur Chintu maafi maangte hain. Sab khush ho jate hain.";
+});
+$("btnPromptBuild").addEventListener("click", ()=>{
+  const text = $("promptInput").value.trim();
+  if(!text){ $("promptStatus").textContent = "⚠️ Pehle apna prompt likhein — kahani ka idea, 2–3 jumle bhi kaafi hain."; $("promptStatus").className = "status warn"; return; }
+  const built = buildFromPrompt(text);
+  if(!built){ $("promptStatus").textContent = "⚠️ Prompt samajh nahi aaya — kam az kam ek jumla likhein."; $("promptStatus").className = "status warn"; return; }
+  loadStory(Object.assign({}, built, {charNames: state.charNames, voiceSettings: state.voiceSettings}));
+  $("promptStatus").textContent = "✅ Poora project ban gaya! " + built.scenes.length + " scenes" + (built.mode==="movie" ? " — Movie mode (3 parts, title card, climax, ending)" : "") + ", title, dialogues, backgrounds, props, voices aur movements shamil hain. Neeche scenes mein har cheez edit kar sakte hain." + (built.truncated ? " (Prompt lamba tha — pehle 20 scenes banaye gaye, baaki 'Scene shamil karein' se add karein.)" : "");
+  $("promptStatus").className = "status ok";
+  document.getElementById("sec-story").scrollIntoView({behavior:"smooth"});
+});
+$("btnNewStory").addEventListener("click", ()=>{
+  state = {title:"Meri Kahani", category:"comedy", mode:"short", actTitles:[], subtitles:Object.assign({on:true,size:"medium",pos:"bottom"}, state.subtitles||{}), charNames:Object.assign({}, state.charNames), voiceSettings:Object.assign({}, state.voiceSettings), scenes:[blankScene()]};
+  activeScene = 0; syncStoryInputs(); renderCharGrid(); renderScenes(); drawCurrent();
+});
+$("btnAddScene").addEventListener("click", ()=>{
+  state.scenes.push(blankScene()); activeScene = state.scenes.length-1; renderScenes(); drawCurrent();
+});
+$("btnPlay").addEventListener("click", playAll);
+$("btnStop").addEventListener("click", ()=>{ stopAll(); drawCurrent(); });
+$("btnExport").addEventListener("click", ()=>exportVideo()); /* NOTE: seedha exportVideo na dein — click event pehla argument ban jata (onlyIdxs) aur export khaali samajh kar ruk jata */
+$("btnSrtOnly").addEventListener("click", downloadSRT);
+$("subToggle").addEventListener("change", e=>{ state.subtitles.on = e.target.checked; applySubSettings(); });
+$("subSize").addEventListener("change", e=>{ state.subtitles.size = e.target.value; applySubSettings(); });
+$("subPos").addEventListener("change", e=>{ state.subtitles.pos = e.target.value; applySubSettings(); });
+$("btnSave").addEventListener("click", saveStory);
+$("btnExportStory").addEventListener("click", exportStoryJSON);
+$("importFile").addEventListener("change", e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ try{ loadStory(JSON.parse(r.result)); $("saveStatus").textContent = "✅ Kahani file load ho gayi."; }catch(err){ alert("File parhi nahi ja saki: " + err.message); } };
+  r.readAsText(f);
+});
+if("speechSynthesis" in window){
+  checkVoices();
+  window.speechSynthesis.onvoiceschanged = checkVoices;
+  setTimeout(checkVoices, 800);
+} else checkVoices();
+startLoop(); /* animation loop — idle saans, walk-in, lip-sync */
+if(!loadSaved()){
+  loadStory(JSON.parse(JSON.stringify(SAMPLE_COMEDY)));
+} else {
+  syncStoryInputs(); renderCharGrid(); renderScenes(); applySubSettings(); drawCurrent();
+}
+</script>
+</body>
+</html>
